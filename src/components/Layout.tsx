@@ -154,6 +154,34 @@ export default function Layout({ children }: LayoutProps) {
         {children}
       </main>
 
+      {/* Footer - Show on all pages except AI Assistant */}
+      {location.pathname !== '/' && (
+        <footer className="border-t border-border bg-muted/30">
+          <div className="container py-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="flex items-center space-x-3 mb-4 md:mb-0">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
+                  <Scale className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  © 2024 Wukala-GPT. Transforming legal services in Pakistan.
+                </span>
+              </div>
+              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                <a href="#" className="hover:text-foreground transition-colors">
+                  Privacy Policy
+                </a>
+                <a href="#" className="hover:text-foreground transition-colors">
+                  Terms of Service
+                </a>
+                <a href="#" className="hover:text-foreground transition-colors">
+                  Contact
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }
