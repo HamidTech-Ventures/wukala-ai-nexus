@@ -9,7 +9,9 @@ import {
   Sun, 
   Menu,
   X,
-  Scale
+  Scale,
+  Newspaper,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +23,8 @@ const navigation = [
   { name: 'AI Assistant', href: '/', icon: MessageSquare },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Find Lawyers', href: '/lawyers', icon: Users },
+  { name: 'Legal News', href: '/news', icon: Newspaper },
+  { name: 'Dictionary', href: '/dictionary', icon: BookOpen },
 ];
 
 export default function Layout({ children }: LayoutProps) {
