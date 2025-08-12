@@ -47,6 +47,8 @@ export default function ChatPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [recordingInterval, setRecordingInterval] = useState<NodeJS.Timeout | null>(null);
   const [chatSessions] = useState<ChatSession[]>([
     {
       id: '1',
@@ -121,8 +123,30 @@ export default function ChatPage() {
   };
 
   const handleVoiceRecord = () => {
-    setIsRecording(!isRecording);
+    if (!isRecording) {
+      // Start recording
+      setIsRecording(true);
+      setRecordingTime(0);
+      const interval = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+      setRecordingInterval(interval);
+    } else {
+      // Stop recording
+      setIsRecording(false);
+      if (recordingInterval) {
+        clearInterval(recordingInterval);
+        setRecordingInterval(null);
+      }
+      setRecordingTime(0);
+    }
     // Voice recording logic would go here
+  };
+
+  const formatRecordingTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const formatTime = (date: Date) => {
@@ -339,9 +363,15 @@ export default function ChatPage() {
               </Button>
             </div>
             
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              AI responses are based on Pakistani legal framework. Always consult with a qualified lawyer for legal advice.
-            </p>
+            {/* Recording Timer */}
+            {isRecording && (
+              <div className="flex items-center justify-center mt-2">
+                <div className="flex items-center space-x-2 text-sm text-destructive animate-pulse">
+                  <div className="w-2 h-2 bg-destructive rounded-full"></div>
+                  <span>Recording: {formatRecordingTime(recordingTime)}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
