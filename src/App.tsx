@@ -11,6 +11,12 @@ import LawyerProfilePage from "./pages/LawyerProfilePage";
 import NewsPage from "./pages/NewsPage";
 import DictionaryPage from "./pages/DictionaryPage";
 import NotFound from "./pages/NotFound";
+import RoleSelectionPage from "./pages/auth/RoleSelectionPage";
+import ClientSignupPage from "./pages/auth/ClientSignupPage";
+import LawyerSignupPage from "./pages/auth/LawyerSignupPage";
+import LoginPage from "./pages/auth/LoginPage";
+import ProfilePage from "./pages/auth/ProfilePage";
+import AdminPanel from "./pages/admin/AdminPanel";
 
 const queryClient = new QueryClient();
 
@@ -20,18 +26,26 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<ChatPage />} />
-            <Route path="/documents" element={<DocumentsPage />} />
-            <Route path="/lawyers" element={<LawyersPage />} />
-            <Route path="/lawyer/:id" element={<LawyerProfilePage />} />
-            <Route path="/news" element={<NewsPage />} />
-            <Route path="/dictionary" element={<DictionaryPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          {/* Auth routes without layout */}
+          <Route path="/auth/role" element={<RoleSelectionPage />} />
+          <Route path="/signup/client" element={<ClientSignupPage />} />
+          <Route path="/signup/lawyer" element={<LawyerSignupPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          
+          {/* Main app routes with layout */}
+          <Route path="/" element={<Layout><ChatPage /></Layout>} />
+          <Route path="/documents" element={<Layout><DocumentsPage /></Layout>} />
+          <Route path="/lawyers" element={<Layout><LawyersPage /></Layout>} />
+          <Route path="/lawyer/:id" element={<Layout><LawyerProfilePage /></Layout>} />
+          <Route path="/news" element={<Layout><NewsPage /></Layout>} />
+          <Route path="/dictionary" element={<Layout><DictionaryPage /></Layout>} />
+          
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
