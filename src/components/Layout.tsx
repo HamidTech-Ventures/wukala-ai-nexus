@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,10 @@ import {
   X,
   Scale,
   Newspaper,
-  BookOpen
+  BookOpen,
+  Home,
+  Info,
+  Crown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +24,10 @@ interface LayoutProps {
 }
 
 const navigation = [
-  { name: 'AI Assistant', href: '/', icon: MessageSquare },
+  { name: 'Home', href: '/', icon: Home },
+  { name: 'About', href: '/about', icon: Info },
+  { name: 'Leadership', href: '/leadership', icon: Crown },
+  { name: 'AI Assistant', href: '/chat', icon: MessageSquare },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Find Lawyers', href: '/lawyers', icon: Users },
   { name: 'Legal News', href: '/news', icon: Newspaper },
@@ -95,8 +102,11 @@ export default function Layout({ children }: LayoutProps) {
               <span className="sr-only">Toggle theme</span>
             </Button>
 
-            <Button className="hidden md:flex bg-gradient-gold hover:shadow-gold transition-all duration-300">
-              Get Started
+            <Button 
+              asChild 
+              className="hidden md:flex bg-gradient-primary hover:shadow-lg transition-all duration-300"
+            >
+              <Link to="/auth/role">Get Started</Link>
             </Button>
 
             {/* Mobile menu button */}
@@ -140,8 +150,8 @@ export default function Layout({ children }: LayoutProps) {
                     </Link>
                   );
                 })}
-                <Button className="mt-4 bg-gradient-gold">
-                  Get Started
+                <Button asChild className="mt-4 bg-gradient-primary">
+                  <Link to="/auth/role">Get Started</Link>
                 </Button>
               </div>
             </nav>
@@ -155,7 +165,7 @@ export default function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Footer - Show on all pages except AI Assistant */}
-      {location.pathname !== '/' && (
+      {location.pathname !== '/chat' && (
         <footer className="border-t border-border bg-muted/30">
           <div className="container py-8">
             <div className="flex flex-col md:flex-row justify-between items-center">

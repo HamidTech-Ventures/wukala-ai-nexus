@@ -1,9 +1,13 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
+import LeadershipPage from "./pages/LeadershipPage";
 import ChatPage from "./pages/ChatPage";
 import DocumentsPage from "./pages/DocumentsPage";
 import LawyersPage from "./pages/LawyersPage";
@@ -36,7 +40,10 @@ const App = () => (
           <Route path="/admin" element={<AdminPanel />} />
           
           {/* Main app routes with layout */}
-          <Route path="/" element={<Layout><ChatPage /></Layout>} />
+          <Route path="/" element={<Layout><HomePage /></Layout>} />
+          <Route path="/about" element={<Layout><AboutPage /></Layout>} />
+          <Route path="/leadership" element={<Layout><LeadershipPage /></Layout>} />
+          <Route path="/chat" element={<Layout><ChatPage /></Layout>} />
           <Route path="/documents" element={<Layout><DocumentsPage /></Layout>} />
           <Route path="/lawyers" element={<Layout><LawyersPage /></Layout>} />
           <Route path="/lawyer/:id" element={<Layout><LawyerProfilePage /></Layout>} />
