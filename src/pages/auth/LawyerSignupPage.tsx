@@ -40,6 +40,7 @@ const LawyerSignupPage = () => {
   useEffect(() => {
     const element = document.querySelector('.step-content');
     if (element) {
+      element.classList.remove('opacity-0');
       element.classList.add('animate-fade-in');
     }
   }, [currentStep]);
