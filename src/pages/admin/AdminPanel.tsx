@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import anime from 'animejs/lib/anime.es.js';
+// Using CSS animations instead
 
 interface LawyerApplication {
   id: string;
@@ -85,13 +85,11 @@ const AdminPanel = () => {
   ]);
 
   useEffect(() => {
-    anime({
-      targets: '.admin-content',
-      translateY: [30, 0],
-      opacity: [0, 1],
-      duration: 800,
-      easing: 'easeOutExpo'
-    });
+    // Use CSS animation class instead
+    const element = document.querySelector('.admin-content');
+    if (element) {
+      element.classList.add('animate-fade-in');
+    }
   }, []);
 
   const filteredApplications = applications.filter(app => {
@@ -109,13 +107,12 @@ const AdminPanel = () => {
       )
     );
     
-    // Success animation
-    anime({
-      targets: `[data-application-id="${applicationId}"]`,
-      scale: [1, 0.95, 1],
-      duration: 400,
-      easing: 'easeInOutQuad'
-    });
+    // Success animation using CSS
+    const element = document.querySelector(`[data-application-id="${applicationId}"]`);
+    if (element) {
+      element.classList.add('animate-scale-in');
+      setTimeout(() => element.classList.remove('animate-scale-in'), 400);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -151,7 +148,7 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="admin-content opacity-0">
+        <div className="admin-content opacity-0 transition-all duration-700">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Admin Panel</h1>

@@ -4,7 +4,7 @@ import { ArrowLeft, User, Mail, Phone, MapPin, Lock, Eye, EyeOff } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import anime from 'animejs/lib/anime.es.js';
+// Using CSS animations instead
 
 const ClientSignupPage = () => {
   const navigate = useNavigate();
@@ -21,13 +21,10 @@ const ClientSignupPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    anime({
-      targets: '.signup-form',
-      translateY: [30, 0],
-      opacity: [0, 1],
-      duration: 800,
-      easing: 'easeOutExpo'
-    });
+    const element = document.querySelector('.signup-form');
+    if (element) {
+      element.classList.add('animate-fade-in');
+    }
   }, []);
 
   const validateField = (name: string, value: string) => {
@@ -74,15 +71,11 @@ const ClientSignupPage = () => {
 
     if (Object.keys(newErrors).length === 0) {
       // Success animation
-      anime({
-        targets: '.signup-form',
-        scale: [1, 0.95, 1],
-        duration: 600,
-        easing: 'easeInOutQuad',
-        complete: () => {
-          navigate('/profile');
-        }
-      });
+      const element = document.querySelector('.signup-form');
+      if (element) {
+        element.classList.add('animate-scale-in');
+        setTimeout(() => navigate('/profile'), 600);
+      }
     }
   };
 
@@ -99,7 +92,7 @@ const ClientSignupPage = () => {
         </Button>
 
         <div className="max-w-md mx-auto">
-          <div className="signup-form bg-card border border-border rounded-2xl p-8 shadow-xl opacity-0">
+          <div className="signup-form bg-card border border-border rounded-2xl p-8 shadow-xl opacity-0 transition-all duration-700">
             <div className="text-center mb-8">
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-primary rounded-2xl flex items-center justify-center">
                 <User className="w-8 h-8 text-primary-foreground" />

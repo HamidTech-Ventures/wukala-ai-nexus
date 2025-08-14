@@ -4,7 +4,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import anime from 'animejs/lib/anime.es.js';
+// Using CSS animations instead
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -16,13 +16,10 @@ const LoginPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    anime({
-      targets: '.login-form',
-      translateY: [30, 0],
-      opacity: [0, 1],
-      duration: 800,
-      easing: 'easeOutExpo'
-    });
+    const element = document.querySelector('.login-form');
+    if (element) {
+      element.classList.add('animate-fade-in');
+    }
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,15 +49,11 @@ const LoginPage = () => {
 
     if (Object.keys(newErrors).length === 0) {
       // Success animation
-      anime({
-        targets: '.login-form',
-        scale: [1, 0.95, 1],
-        duration: 600,
-        easing: 'easeInOutQuad',
-        complete: () => {
-          navigate('/profile');
-        }
-      });
+      const element = document.querySelector('.login-form');
+      if (element) {
+        element.classList.add('animate-scale-in');
+        setTimeout(() => navigate('/profile'), 600);
+      }
     }
   };
 

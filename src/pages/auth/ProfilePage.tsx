@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import anime from 'animejs/lib/anime.es.js';
+// Using CSS animations instead
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -36,12 +36,9 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
-    anime({
-      targets: '.profile-content',
-      translateY: [30, 0],
-      opacity: [0, 1],
-      duration: 800,
-      easing: 'easeOutExpo'
+    const elements = document.querySelectorAll('.profile-content');
+    elements.forEach(element => {
+      element.classList.add('animate-fade-in');
     });
   }, []);
 
@@ -52,14 +49,11 @@ const ProfilePage = () => {
 
   const handleSave = () => {
     setIsEditing(false);
-    // Save animation
-    anime({
-      targets: '.save-success',
-      scale: [0, 1],
-      opacity: [0, 1],
-      duration: 500,
-      easing: 'easeOutBack'
-    });
+    // Save animation using CSS
+    const element = document.querySelector('.save-success');
+    if (element) {
+      element.classList.add('animate-scale-in');
+    }
   };
 
   const getStatusBadge = () => {

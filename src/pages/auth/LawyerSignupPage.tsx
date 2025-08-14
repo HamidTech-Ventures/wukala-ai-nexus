@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import anime from 'animejs/lib/anime.es.js';
+// Using CSS animations instead
 
 const LawyerSignupPage = () => {
   const navigate = useNavigate();
@@ -36,13 +36,10 @@ const LawyerSignupPage = () => {
   const progress = (currentStep / totalSteps) * 100;
 
   useEffect(() => {
-    anime({
-      targets: '.step-content',
-      translateY: [30, 0],
-      opacity: [0, 1],
-      duration: 600,
-      easing: 'easeOutExpo'
-    });
+    const element = document.querySelector('.step-content');
+    if (element) {
+      element.classList.add('animate-fade-in');
+    }
   }, [currentStep]);
 
   const validateStep = (step: number) => {
@@ -119,15 +116,11 @@ const LawyerSignupPage = () => {
   };
 
   const handleSubmit = () => {
-    anime({
-      targets: '.step-content',
-      scale: [1, 0.95, 1],
-      duration: 600,
-      easing: 'easeInOutQuad',
-      complete: () => {
-        navigate('/profile?status=pending');
-      }
-    });
+    const element = document.querySelector('.step-content');
+    if (element) {
+      element.classList.add('animate-scale-in');
+      setTimeout(() => navigate('/profile?status=pending'), 600);
+    }
   };
 
   const renderStep1 = () => (
