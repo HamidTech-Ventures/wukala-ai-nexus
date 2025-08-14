@@ -5,6 +5,20 @@ import { useEffect } from 'react';
 const RoleSelectionPage = () => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const elements = document.querySelectorAll('.hero-title, .role-card');
+      elements.forEach((el, index) => {
+        setTimeout(() => {
+          el.classList.remove('opacity-0');
+          el.classList.add('animate-fade-in');
+        }, index * 200);
+      });
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleCardClick = (role: 'client' | 'lawyer') => {
     navigate(`/signup/${role}`);
   };

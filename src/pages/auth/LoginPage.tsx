@@ -4,10 +4,12 @@ import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/contexts/AuthContext';
 // Using CSS animations instead
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -48,11 +50,22 @@ const LoginPage = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      // Simulate login success - determine user role based on email
+      const userRole = formData.email.includes('lawyer') ? 'lawyer' : 'client';
+      const userData = {
+        id: '1',
+        name: userRole === 'lawyer' ? 'John Doe' : 'Jane Smith',
+        email: formData.email,
+        role: userRole as 'client' | 'lawyer'
+      };
+      
+      login(userData);
+      
       // Success animation
       const element = document.querySelector('.login-form');
       if (element) {
         element.classList.add('animate-scale-in');
-        setTimeout(() => navigate('/profile'), 600);
+        setTimeout(() => navigate('/'), 600);
       }
     }
   };

@@ -1,7 +1,8 @@
 
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   MessageSquare, 
   FileText, 
@@ -15,7 +16,9 @@ import {
   BookOpen,
   Home,
   Info,
-  Crown
+  Crown,
+  User,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -23,7 +26,13 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const navigation = [
+const publicNavigation = [
+  { name: 'Home', href: '/', icon: Home },
+  { name: 'About', href: '/about', icon: Info },
+  { name: 'Leadership', href: '/leadership', icon: Crown },
+];
+
+const clientNavigation = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'About', href: '/about', icon: Info },
   { name: 'Leadership', href: '/leadership', icon: Crown },
@@ -34,10 +43,36 @@ const navigation = [
   { name: 'Dictionary', href: '/dictionary', icon: BookOpen },
 ];
 
+const lawyerNavigation = [
+  { name: 'Home', href: '/', icon: Home },
+  { name: 'About', href: '/about', icon: Info },
+  { name: 'Leadership', href: '/leadership', icon: Crown },
+  { name: 'AI Assistant', href: '/chat', icon: MessageSquare },
+  { name: 'Documents', href: '/documents', icon: FileText },
+  { name: 'My Profile', href: '/lawyer-profile', icon: User },
+  { name: 'Legal News', href: '/news', icon: Newspaper },
+  { name: 'Dictionary', href: '/dictionary', icon: BookOpen },
+];
+
 export default function Layout({ children }: LayoutProps) {
   const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
+
+  const getNavigation = () => {
+    if (!isAuthenticated) return publicNavigation;
+    if (user?.role === 'lawyer') return lawyerNavigation;
+    return clientNavigation;
+  };
+
+  const navigation = getNavigation();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -102,12 +137,29 @@ export default function Layout({ children }: LayoutProps) {
               <span className="sr-only">Toggle theme</span>
             </Button>
 
-            <Button 
-              asChild 
-              className="hidden md:flex bg-gradient-primary hover:shadow-lg transition-all duration-300"
-            >
-              <Link to="/auth/role">Get Started</Link>
-            </Button>
+            {!isAuthenticated ? (
+              <Button 
+                asChild 
+                className="hidden md:flex bg-gradient-primary hover:shadow-lg transition-all duration-300"
+              >
+                <Link to="/auth/role">Get Started</Link>
+              </Button>
+            ) : (
+              <div className="hidden md:flex items-center space-x-2">
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {user?.name}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="h-9 px-3"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            )}
 
             {/* Mobile menu button */}
             <Button
@@ -150,9 +202,26 @@ export default function Layout({ children }: LayoutProps) {
                     </Link>
                   );
                 })}
-                <Button asChild className="mt-4 bg-gradient-primary">
-                  <Link to="/auth/role">Get Started</Link>
-                </Button>
+                {!isAuthenticated ? (
+                  <Button asChild className="mt-4 bg-gradient-primary">
+                    <Link to="/auth/role">Get Started</Link>
+                  </Button>
+                ) : (
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm text-muted-foreground px-3">
+                      Welcome, {user?.name}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLogout}
+                      className="w-full justify-start"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </Button>
+                  </div>
+                )}
               </div>
             </nav>
           </div>

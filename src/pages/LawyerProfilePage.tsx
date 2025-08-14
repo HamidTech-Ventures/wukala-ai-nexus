@@ -1,453 +1,389 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Star, 
+  User, 
+  Mail, 
+  Phone, 
   MapPin, 
-  GraduationCap, 
-  Languages, 
+  Star, 
+  Calendar, 
+  BookOpen, 
   Award,
-  MessageSquare,
-  Send,
-  Calendar,
-  Clock,
-  Phone,
-  Mail,
-  User,
-  CheckCircle
+  Edit3,
+  Save,
+  Camera
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
-interface Review {
-  id: string;
-  clientName: string;
-  rating: number;
-  comment: string;
-  date: Date;
-  caseType: string;
-}
+const LawyerProfilePage = () => {
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: user?.name || 'John Doe',
+    email: user?.email || 'john.doe@example.com',
+    phone: '+92 300 1234567',
+    city: 'Lahore',
+    bio: 'Experienced corporate lawyer with 10+ years in commercial law, mergers & acquisitions, and regulatory compliance.',
+    specialization: 'Corporate Law',
+    experience: '10 years',
+    education: 'LLB from Punjab University Law College',
+    barCouncil: 'Punjab Bar Council',
+    license: 'PBC-2014-12345',
+    hourlyRate: '15,000'
+  });
 
-interface Message {
-  id: string;
-  content: string;
-  sender: 'client' | 'lawyer';
-  timestamp: Date;
-}
-
-const mockReviews: Review[] = [
-  {
-    id: '1',
-    clientName: 'Anonymous Client',
-    rating: 5,
-    comment: 'Excellent service! Very knowledgeable and handled my case professionally.',
-    date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-    caseType: 'Corporate Law'
-  },
-  {
-    id: '2',
-    clientName: 'Business Owner',
-    rating: 5,
-    comment: 'Helped me with contract negotiations. Great communication and results.',
-    date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14),
-    caseType: 'Business Law'
-  },
-  {
-    id: '3',
-    clientName: 'Startup Founder',
-    rating: 4,
-    comment: 'Good advice on business formation. Responsive and detail-oriented.',
-    date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 21),
-    caseType: 'Corporate Law'
-  }
-];
-
-export default function LawyerProfilePage() {
-  const { id } = useParams();
-  const [activeTab, setActiveTab] = useState<'profile' | 'chat'>('profile');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: 'Hello! Thank you for reaching out. How can I assist you with your legal matter today?',
-      sender: 'lawyer',
-      timestamp: new Date(Date.now() - 1000 * 60 * 5)
-    }
-  ]);
-  const [inputMessage, setInputMessage] = useState('');
-
-  // Mock lawyer data (in real app, fetch by ID)
-  const lawyer = {
-    id: '1',
-    name: 'Adv. Muhammad Hassan',
-    specialization: ['Corporate Law', 'Business Law', 'Contract Law'],
-    location: 'Lahore, Punjab',
-    rating: 4.9,
-    reviewCount: 127,
-    experience: 12,
-    languages: ['Urdu', 'English', 'Punjabi'],
-    description: 'Experienced corporate lawyer with expertise in business formation, mergers, and contract negotiations. Served major multinational companies in Pakistan and internationally.',
-    hourlyRate: 5000,
-    availability: 'available',
-    verified: true,
-    education: 'LLB from Punjab University Law College, LLM from London School of Economics',
-    barAdmission: 'High Court of Punjab (2012), Supreme Court of Pakistan (2018)',
-    achievements: [
-      'Top Corporate Lawyer Award 2023',
-      'Published author on Pakistani Corporate Law',
-      'Member of Punjab Bar Council'
-    ],
-    caseTypes: [
-      'Business Formation & Registration',
-      'Mergers & Acquisitions',
-      'Contract Drafting & Review',
-      'Corporate Compliance',
-      'Intellectual Property',
-      'Employment Law'
-    ]
+  const handleInputChange = (field: string, value: string) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      content: inputMessage,
-      sender: 'client',
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, newMessage]);
-    setInputMessage('');
-
-    // Simulate lawyer response
-    setTimeout(() => {
-      const response: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'Thank you for your message. I understand your concern and will provide you with detailed legal guidance.',
-        sender: 'lawyer',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, response]);
-    }, 2000);
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const handleSave = () => {
+    setIsEditing(false);
+    // Here you would typically save to backend
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Sidebar - Lawyer Info */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-8">
+    <div className="min-h-screen bg-background py-8">
+      <div className="container max-w-6xl mx-auto px-4">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Professional Profile
+              </h1>
+              <p className="text-muted-foreground">
+                Manage your professional information and showcase your expertise
+              </p>
+            </div>
+            <Button
+              onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+              className="bg-gradient-primary hover:shadow-lg transition-all duration-300"
+            >
+              {isEditing ? (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Changes
+                </>
+              ) : (
+                <>
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column - Profile Overview */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Profile Card */}
+            <Card className="overflow-hidden">
               <CardContent className="p-6">
-                {/* Profile Header */}
-                <div className="text-center mb-6">
-                  <div className="relative mx-auto mb-4">
-                    <Avatar className="h-24 w-24 mx-auto">
-                      <AvatarFallback className="bg-gradient-primary text-primary-foreground text-xl">
-                        {lawyer.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    {lawyer.verified && (
-                      <div className="absolute -bottom-2 -right-2">
-                        <CheckCircle className="h-6 w-6 text-gold fill-current" />
-                      </div>
+                <div className="text-center">
+                  <div className="relative mb-4">
+                    <div className="w-24 h-24 mx-auto bg-gradient-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                      {profileData.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    {isEditing && (
+                      <Button
+                        size="sm"
+                        className="absolute bottom-0 right-1/2 translate-x-1/2 translate-y-2 w-8 h-8 rounded-full p-0"
+                      >
+                        <Camera className="w-4 h-4" />
+                      </Button>
                     )}
                   </div>
                   
-                  <h1 className="text-xl font-bold mb-1">{lawyer.name}</h1>
-                  <p className="text-sm text-muted-foreground mb-3">{lawyer.specialization[0]}</p>
+                  {isEditing ? (
+                    <Input
+                      value={profileData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      className="text-center font-semibold text-lg mb-2"
+                    />
+                  ) : (
+                    <h3 className="font-semibold text-lg text-foreground mb-2">
+                      {profileData.name}
+                    </h3>
+                  )}
                   
-                  <div className="flex items-center justify-center space-x-2 mb-4">
+                  <Badge variant="secondary" className="mb-4">
+                    Verified Lawyer
+                  </Badge>
+                  
+                  <div className="flex items-center justify-center mb-2">
                     <div className="flex items-center">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm font-medium ml-1">{lawyer.rating}</span>
-                      <span className="text-sm text-muted-foreground ml-1">
-                        ({lawyer.reviewCount} reviews)
-                      </span>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star key={star} className="w-4 h-4 fill-gold text-gold" />
+                      ))}
+                      <span className="ml-2 text-sm text-muted-foreground">4.9 (127 reviews)</span>
                     </div>
                   </div>
-
-                  <Button 
-                    onClick={() => setActiveTab('chat')}
-                    className="w-full bg-gradient-primary hover:shadow-md transition-all duration-200"
-                  >
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Start Chat - Rs. {lawyer.hourlyRate}/hr
-                  </Button>
                 </div>
 
-                <Separator className="my-6" />
-
-                {/* Quick Info */}
-                <div className="space-y-3">
-                  <div className="flex items-center text-sm">
-                    <MapPin className="h-4 w-4 text-muted-foreground mr-2" />
-                    <span>{lawyer.location}</span>
+                <div className="space-y-3 mt-6">
+                  <div className="flex items-center">
+                    <Mail className="w-4 h-4 text-muted-foreground mr-3" />
+                    {isEditing ? (
+                      <Input
+                        value={profileData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        type="email"
+                        className="text-sm"
+                      />
+                    ) : (
+                      <span className="text-sm">{profileData.email}</span>
+                    )}
                   </div>
-                  <div className="flex items-center text-sm">
-                    <GraduationCap className="h-4 w-4 text-muted-foreground mr-2" />
-                    <span>{lawyer.experience} years experience</span>
+                  
+                  <div className="flex items-center">
+                    <Phone className="w-4 h-4 text-muted-foreground mr-3" />
+                    {isEditing ? (
+                      <Input
+                        value={profileData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        className="text-sm"
+                      />
+                    ) : (
+                      <span className="text-sm">{profileData.phone}</span>
+                    )}
                   </div>
-                  <div className="flex items-center text-sm">
-                    <Languages className="h-4 w-4 text-muted-foreground mr-2" />
-                    <span>{lawyer.languages.join(', ')}</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <Clock className="h-4 w-4 text-muted-foreground mr-2" />
-                    <span className="text-green-600 font-medium">Available Now</span>
+                  
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 text-muted-foreground mr-3" />
+                    {isEditing ? (
+                      <Input
+                        value={profileData.city}
+                        onChange={(e) => handleInputChange('city', e.target.value)}
+                        className="text-sm"
+                      />
+                    ) : (
+                      <span className="text-sm">{profileData.city}, Pakistan</span>
+                    )}
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <Separator className="my-6" />
-
-                {/* Contact Options */}
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Phone className="h-4 w-4 mr-2" />
-                    Schedule Call
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Book Appointment
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Mail className="h-4 w-4 mr-2" />
-                    Send Email
-                  </Button>
+            {/* Quick Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Professional Stats</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Cases Won</span>
+                  <span className="font-semibold">142</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Active Cases</span>
+                  <span className="font-semibold">18</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Response Time</span>
+                  <span className="font-semibold">2 hours</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Hourly Rate</span>
+                  {isEditing ? (
+                    <Input
+                      value={profileData.hourlyRate}
+                      onChange={(e) => handleInputChange('hourlyRate', e.target.value)}
+                      className="w-20 text-right text-sm"
+                      placeholder="Rate"
+                    />
+                  ) : (
+                    <span className="font-semibold">PKR {profileData.hourlyRate}</span>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Main Content */}
+          {/* Right Column - Detailed Information */}
           <div className="lg:col-span-2">
-            {/* Tab Navigation */}
-            <div className="flex space-x-1 mb-6">
-              <Button
-                variant={activeTab === 'profile' ? 'default' : 'ghost'}
-                onClick={() => setActiveTab('profile')}
-                className={activeTab === 'profile' ? 'bg-primary' : ''}
-              >
-                Profile
-              </Button>
-              <Button
-                variant={activeTab === 'chat' ? 'default' : 'ghost'}
-                onClick={() => setActiveTab('chat')}
-                className={activeTab === 'chat' ? 'bg-primary' : ''}
-              >
-                Chat
-              </Button>
-            </div>
+            <Tabs defaultValue="about" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="about">About</TabsTrigger>
+                <TabsTrigger value="experience">Experience</TabsTrigger>
+                <TabsTrigger value="education">Education</TabsTrigger>
+                <TabsTrigger value="settings">Settings</TabsTrigger>
+              </TabsList>
 
-            {activeTab === 'profile' ? (
-              <div className="space-y-6">
-                {/* About */}
+              <TabsContent value="about" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>About</CardTitle>
+                    <CardTitle className="flex items-center">
+                      <User className="w-5 h-5 mr-2" />
+                      Professional Bio
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {lawyer.description}
-                    </p>
+                    {isEditing ? (
+                      <Textarea
+                        value={profileData.bio}
+                        onChange={(e) => handleInputChange('bio', e.target.value)}
+                        rows={4}
+                        placeholder="Tell clients about your experience and expertise..."
+                      />
+                    ) : (
+                      <p className="text-muted-foreground leading-relaxed">{profileData.bio}</p>
+                    )}
                   </CardContent>
                 </Card>
 
-                {/* Specializations */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Areas of Practice</CardTitle>
+                    <CardTitle>Specializations</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {lawyer.caseTypes.map((caseType) => (
-                        <div key={caseType} className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                          <span className="text-sm">{caseType}</span>
-                        </div>
-                      ))}
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline">Corporate Law</Badge>
+                      <Badge variant="outline">Contract Law</Badge>
+                      <Badge variant="outline">Mergers & Acquisitions</Badge>
+                      <Badge variant="outline">Regulatory Compliance</Badge>
+                      <Badge variant="outline">Commercial Litigation</Badge>
                     </div>
                   </CardContent>
                 </Card>
+              </TabsContent>
 
-                {/* Education & Credentials */}
+              <TabsContent value="experience" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Education & Credentials</CardTitle>
+                    <CardTitle className="flex items-center">
+                      <Award className="w-5 h-5 mr-2" />
+                      Professional Experience
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="border-l-2 border-primary pl-4">
+                      <h4 className="font-semibold">Senior Partner</h4>
+                      <p className="text-sm text-muted-foreground">Khan & Associates Law Firm</p>
+                      <p className="text-xs text-muted-foreground">2020 - Present</p>
+                      <p className="text-sm mt-2">Leading corporate law division with focus on M&A transactions and regulatory matters.</p>
+                    </div>
+                    
+                    <div className="border-l-2 border-primary pl-4">
+                      <h4 className="font-semibold">Associate Lawyer</h4>
+                      <p className="text-sm text-muted-foreground">Legal Solutions LLP</p>
+                      <p className="text-xs text-muted-foreground">2016 - 2020</p>
+                      <p className="text-sm mt-2">Specialized in commercial contracts and litigation matters.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="education" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <BookOpen className="w-5 h-5 mr-2" />
+                      Education & Credentials
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div>
-                      <h4 className="font-medium mb-1">Education</h4>
-                      <p className="text-sm text-muted-foreground">{lawyer.education}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-1">Bar Admissions</h4>
-                      <p className="text-sm text-muted-foreground">{lawyer.barAdmission}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-1">Achievements</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        {lawyer.achievements.map((achievement, index) => (
-                          <li key={index} className="flex items-center space-x-2">
-                            <Award className="h-3 w-3 text-gold" />
-                            <span>{achievement}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="education">Education</Label>
+                        {isEditing ? (
+                          <Input
+                            id="education"
+                            value={profileData.education}
+                            onChange={(e) => handleInputChange('education', e.target.value)}
+                          />
+                        ) : (
+                          <p className="text-sm text-muted-foreground mt-1">{profileData.education}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="barCouncil">Bar Council</Label>
+                        {isEditing ? (
+                          <Input
+                            id="barCouncil"
+                            value={profileData.barCouncil}
+                            onChange={(e) => handleInputChange('barCouncil', e.target.value)}
+                          />
+                        ) : (
+                          <p className="text-sm text-muted-foreground mt-1">{profileData.barCouncil}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="license">License Number</Label>
+                        {isEditing ? (
+                          <Input
+                            id="license"
+                            value={profileData.license}
+                            onChange={(e) => handleInputChange('license', e.target.value)}
+                          />
+                        ) : (
+                          <p className="text-sm text-muted-foreground mt-1">{profileData.license}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="experience">Years of Experience</Label>
+                        {isEditing ? (
+                          <Input
+                            id="experience"
+                            value={profileData.experience}
+                            onChange={(e) => handleInputChange('experience', e.target.value)}
+                          />
+                        ) : (
+                          <p className="text-sm text-muted-foreground mt-1">{profileData.experience}</p>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
+              </TabsContent>
 
-                {/* Reviews */}
+              <TabsContent value="settings" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Client Reviews</CardTitle>
+                    <CardTitle>Profile Settings</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {mockReviews.map((review) => (
-                        <div key={review.id} className="border-b border-border last:border-0 pb-4 last:pb-0">
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              <Avatar className="h-8 w-8">
-                                <AvatarFallback>
-                                  <User className="h-4 w-4" />
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-medium text-sm">{review.clientName}</p>
-                                <p className="text-xs text-muted-foreground">{review.caseType}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={cn(
-                                    'h-3 w-3',
-                                    i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                  )}
-                                />
-                              ))}
-                              <span className="text-xs text-muted-foreground ml-1">
-                                {formatDate(review.date)}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground">{review.comment}</p>
-                        </div>
-                      ))}
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label>Profile Visibility</Label>
+                        <p className="text-sm text-muted-foreground">Make your profile visible to potential clients</p>
+                      </div>
+                      <Button variant="outline" size="sm">Public</Button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label>Available for New Cases</Label>
+                        <p className="text-sm text-muted-foreground">Accept new case inquiries</p>
+                      </div>
+                      <Button variant="outline" size="sm">Available</Button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label>Email Notifications</Label>
+                        <p className="text-sm text-muted-foreground">Receive email updates for new inquiries</p>
+                      </div>
+                      <Button variant="outline" size="sm">Enabled</Button>
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            ) : (
-              /* Chat Interface */
-              <Card className="h-[600px] flex flex-col">
-                <CardHeader className="border-b">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Chat with {lawyer.name}</CardTitle>
-                    <Badge variant="secondary" className="text-xs">
-                      Rs. {lawyer.hourlyRate}/hour
-                    </Badge>
-                  </div>
-                </CardHeader>
-                
-                <ScrollArea className="flex-1 p-4">
-                  <div className="space-y-4">
-                    {messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={cn(
-                          'flex items-start space-x-3',
-                          message.sender === 'client' ? 'flex-row-reverse space-x-reverse' : ''
-                        )}
-                      >
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className={cn(
-                            message.sender === 'client' 
-                              ? 'bg-primary text-primary-foreground' 
-                              : 'bg-muted'
-                          )}>
-                            {message.sender === 'client' ? (
-                              <User className="h-4 w-4" />
-                            ) : (
-                              lawyer.name.split(' ').map(n => n[0]).join('')
-                            )}
-                          </AvatarFallback>
-                        </Avatar>
-                        
-                        <div className={cn(
-                          'flex-1 max-w-sm',
-                          message.sender === 'client' ? 'flex justify-end' : ''
-                        )}>
-                          <div className={cn(
-                            'p-3 rounded-2xl',
-                            message.sender === 'client' 
-                              ? 'chat-bubble-user' 
-                              : 'chat-bubble-ai'
-                          )}>
-                            <p className="text-sm">{message.content}</p>
-                            <p className={cn(
-                              'text-xs mt-2 opacity-70',
-                              message.sender === 'client' ? 'text-primary-foreground' : 'text-muted-foreground'
-                            )}>
-                              {formatTime(message.timestamp)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-
-                <div className="p-4 border-t">
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      placeholder="Type your legal question..."
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSendMessage();
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    <Button 
-                      onClick={handleSendMessage}
-                      disabled={!inputMessage.trim()}
-                      className="bg-gradient-primary"
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Professional legal consultation. Confidential and secure.
-                  </p>
-                </div>
-              </Card>
-            )}
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default LawyerProfilePage;

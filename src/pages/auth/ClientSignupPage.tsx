@@ -4,10 +4,12 @@ import { ArrowLeft, User, Mail, Phone, MapPin, Lock, Eye, EyeOff } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/contexts/AuthContext';
 // Using CSS animations instead
 
 const ClientSignupPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -70,11 +72,20 @@ const ClientSignupPage = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      const userData = {
+        id: '1',
+        name: formData.name,
+        email: formData.email,
+        role: 'client' as const
+      };
+      
+      login(userData);
+      
       // Success animation
       const element = document.querySelector('.signup-form');
       if (element) {
         element.classList.add('animate-scale-in');
-        setTimeout(() => navigate('/profile'), 600);
+        setTimeout(() => navigate('/'), 600);
       }
     }
   };

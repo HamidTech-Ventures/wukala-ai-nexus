@@ -6,10 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/contexts/AuthContext';
 // Using CSS animations instead
 
 const LawyerSignupPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     // Step 1
@@ -116,10 +118,20 @@ const LawyerSignupPage = () => {
   };
 
   const handleSubmit = () => {
+    const userData = {
+      id: '1',
+      name: formData.fullName,
+      email: formData.email,
+      role: 'lawyer' as const,
+      status: 'pending' as const
+    };
+    
+    login(userData);
+    
     const element = document.querySelector('.step-content');
     if (element) {
       element.classList.add('animate-scale-in');
-      setTimeout(() => navigate('/profile?status=pending'), 600);
+      setTimeout(() => navigate('/'), 600);
     }
   };
 
