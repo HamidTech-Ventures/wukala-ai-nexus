@@ -137,7 +137,7 @@ const LawyerSignupPage = () => {
   };
 
   const renderStep1 = () => (
-    <div className="step-content space-y-6 opacity-0">
+    <div className="step-content space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground">Personal Information</h2>
         <p className="text-muted-foreground">Let's start with your basic details</p>
@@ -228,7 +228,7 @@ const LawyerSignupPage = () => {
   );
 
   const renderStep2 = () => (
-    <div className="step-content space-y-6 opacity-0">
+    <div className="step-content space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground">Verification Information</h2>
         <p className="text-muted-foreground">Professional credentials and qualifications</p>
@@ -310,7 +310,7 @@ const LawyerSignupPage = () => {
   );
 
   const renderStep3 = () => (
-    <div className="step-content space-y-6 opacity-0">
+    <div className="step-content space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground">Document Upload</h2>
         <p className="text-muted-foreground">Upload your degree document and introduction video</p>

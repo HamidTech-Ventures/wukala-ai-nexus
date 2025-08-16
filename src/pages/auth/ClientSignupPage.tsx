@@ -25,6 +25,7 @@ const ClientSignupPage = () => {
   useEffect(() => {
     const element = document.querySelector('.signup-form');
     if (element) {
+      element.classList.remove('opacity-0');
       element.classList.add('animate-fade-in');
     }
   }, []);
