@@ -50,13 +50,43 @@ const LoginPage = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Simulate login success - determine user role based on email
-      const userRole = formData.email.includes('lawyer') ? 'lawyer' : 'client';
+      // Admin login credentials
+      if (formData.email === 'admin@wukala.com' && formData.password === 'admin123') {
+        const userData = {
+          id: 'admin',
+          name: 'Admin User',
+          email: formData.email,
+          role: 'admin' as const
+        };
+        login(userData);
+        setTimeout(() => navigate('/admin'), 600);
+        return;
+      }
+
+      // Check if lawyer exists in applications
+      let userRole: 'client' | 'lawyer' = 'client';
+      let userName = 'User';
+      let userStatus: 'pending' | 'approved' | 'rejected' | undefined = undefined;
+
+      try {
+        const stored = localStorage.getItem('lawyer_applications');
+        if (stored) {
+          const apps = JSON.parse(stored);
+          const lawyerApp = apps.find((app: any) => app.email === formData.email);
+          if (lawyerApp) {
+            userRole = 'lawyer';
+            userName = lawyerApp.name;
+            userStatus = lawyerApp.status;
+          }
+        }
+      } catch {}
+
       const userData = {
-        id: '1',
-        name: userRole === 'lawyer' ? 'John Doe' : 'Jane Smith',
+        id: Date.now().toString(),
+        name: userName,
         email: formData.email,
-        role: userRole as 'client' | 'lawyer'
+        role: userRole,
+        ...(userStatus && { status: userStatus })
       };
       
       login(userData);
@@ -90,6 +120,11 @@ const LoginPage = () => {
               </div>
               <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
               <p className="text-muted-foreground">Sign in to your Wukala-GPT account</p>
+              <div className="mt-3 p-3 bg-muted/30 rounded-lg">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Admin Access:</strong> admin@wukala.com / admin123
+                </p>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">

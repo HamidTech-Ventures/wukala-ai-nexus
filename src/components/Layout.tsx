@@ -145,12 +145,21 @@ export default function Layout({ children }: LayoutProps) {
             </Button>
 
             {!isAuthenticated ? (
-              <Button 
-                asChild 
-                className="hidden md:flex bg-gradient-primary hover:shadow-lg transition-all duration-300"
-              >
-                <Link to="/auth/role">Get Started</Link>
-              </Button>
+              <div className="hidden md:flex space-x-2">
+                <Button 
+                  asChild 
+                  variant="outline"
+                  size="sm"
+                >
+                  <Link to="/login">Sign In</Link>
+                </Button>
+                <Button 
+                  asChild 
+                  className="bg-gradient-primary hover:shadow-lg transition-all duration-300"
+                >
+                  <Link to="/auth/role">Get Started</Link>
+                </Button>
+              </div>
             ) : (
               <div className="hidden md:flex items-center space-x-2">
                 <span className="text-sm text-muted-foreground">
@@ -210,9 +219,14 @@ export default function Layout({ children }: LayoutProps) {
                   );
                 })}
                 {!isAuthenticated ? (
-                  <Button asChild className="mt-4 bg-gradient-primary">
-                    <Link to="/auth/role">Get Started</Link>
-                  </Button>
+                  <div className="mt-4 space-y-2">
+                    <Button asChild variant="outline" className="w-full">
+                      <Link to="/login">Sign In</Link>
+                    </Button>
+                    <Button asChild className="w-full bg-gradient-primary">
+                      <Link to="/auth/role">Get Started</Link>
+                    </Button>
+                  </div>
                 ) : (
                   <div className="mt-4 space-y-2">
                     <p className="text-sm text-muted-foreground px-3">
