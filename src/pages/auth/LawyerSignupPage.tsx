@@ -119,12 +119,36 @@ const LawyerSignupPage = () => {
   };
 
   const handleSubmit = () => {
+    // Create application entry for admin review
+    const application = {
+      id: Date.now().toString(),
+      name: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      city: formData.city,
+      barCouncilNumber: formData.barCouncilNumber,
+      degreeTitle: formData.degreeTitle,
+      university: formData.university,
+      yearOfCompletion: formData.yearOfCompletion,
+      chamberAddress: formData.chamberAddress,
+      degreeDocument: formData.degreeDocument?.name || 'degree_document.pdf',
+      introVideo: formData.introVideo?.name || 'intro_video.mp4',
+      submittedAt: new Date().toISOString(),
+      status: 'pending' as const,
+    };
+    try {
+      const existing = localStorage.getItem('lawyer_applications');
+      const apps = existing ? JSON.parse(existing) : [];
+      apps.unshift(application);
+      localStorage.setItem('lawyer_applications', JSON.stringify(apps));
+    } catch {}
+
     const userData = {
-      id: '1',
+      id: application.id,
       name: formData.fullName,
       email: formData.email,
       role: 'lawyer' as const,
-      status: 'pending' as const
+      status: 'pending' as const,
     };
     
     login(userData);
@@ -132,7 +156,7 @@ const LawyerSignupPage = () => {
     const element = document.querySelector('.step-content');
     if (element) {
       element.classList.add('animate-scale-in');
-      setTimeout(() => navigate('/'), 600);
+      setTimeout(() => navigate('/lawyer-profile'), 600);
     }
   };
 

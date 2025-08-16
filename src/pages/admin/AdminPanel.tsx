@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 // Using CSS animations instead
 
 interface LawyerApplication {
@@ -28,61 +30,26 @@ interface LawyerApplication {
 }
 
 const AdminPanel = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedApplication, setSelectedApplication] = useState<LawyerApplication | null>(null);
-  
-  // Mock data - in real app, this would come from API
-  const [applications, setApplications] = useState<LawyerApplication[]>([
-    {
-      id: '1',
-      name: 'Ahmad Hassan',
-      email: 'ahmad.hassan@example.com',
-      phone: '0300-1234567',
-      city: 'Lahore',
-      barCouncilNumber: 'LHC-2020-12345',
-      degreeTitle: 'LLB',
-      university: 'Punjab University',
-      yearOfCompletion: '2020',
-      chamberAddress: 'Chamber 123, District Courts, Lahore',
-      degreeDocument: 'ahmad_degree.pdf',
-      introVideo: 'ahmad_intro.mp4',
-      submittedAt: '2024-01-15T10:30:00Z',
-      status: 'pending'
-    },
-    {
-      id: '2',
-      name: 'Fatima Khan',
-      email: 'fatima.khan@example.com',
-      phone: '0301-9876543',
-      city: 'Karachi',
-      barCouncilNumber: 'KHI-2019-67890',
-      degreeTitle: 'LLM',
-      university: 'Karachi University',
-      yearOfCompletion: '2019',
-      chamberAddress: 'Office 456, Commercial Area, Karachi',
-      degreeDocument: 'fatima_degree.pdf',
-      introVideo: 'fatima_intro.mp4',
-      submittedAt: '2024-01-14T14:20:00Z',
-      status: 'pending'
-    },
-    {
-      id: '3',
-      name: 'Muhammad Ali',
-      email: 'muhammad.ali@example.com',
-      phone: '0302-5555555',
-      city: 'Islamabad',
-      barCouncilNumber: 'ISB-2021-11111',
-      degreeTitle: 'LLB',
-      university: 'International Islamic University',
-      yearOfCompletion: '2021',
-      chamberAddress: 'Chamber 789, F-8 Courts, Islamabad',
-      degreeDocument: 'ali_degree.pdf',
-      introVideo: 'ali_intro.mp4',
-      submittedAt: '2024-01-13T09:15:00Z',
-      status: 'approved'
+
+  useEffect(() => {
+    if (user && user.role !== 'admin') {
+      navigate('/');
     }
-  ]);
+  }, [user, navigate]);
+  const [applications, setApplications] = useState<LawyerApplication[]>([]);
+
+  // Load applications from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('lawyer_applications');
+      if (stored) setApplications(JSON.parse(stored));
+    } catch {}
+  }, []);
 
   useEffect(() => {
     // Use CSS animation class instead
@@ -101,11 +68,15 @@ const AdminPanel = () => {
   });
 
   const handleStatusChange = (applicationId: string, newStatus: 'approved' | 'rejected') => {
-    setApplications(prev => 
-      prev.map(app => 
+    setApplications(prev => {
+      const updated = prev.map(app => 
         app.id === applicationId ? { ...app, status: newStatus } : app
-      )
-    );
+      );
+      try {
+        localStorage.setItem('lawyer_applications', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
     
     // Success animation using CSS
     const element = document.querySelector(`[data-application-id="${applicationId}"]`);

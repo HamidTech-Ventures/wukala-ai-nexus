@@ -54,6 +54,12 @@ const lawyerNavigation = [
   { name: 'Dictionary', href: '/dictionary', icon: BookOpen },
 ];
 
+const adminNavigation = [
+  { name: 'Home', href: '/', icon: Home },
+  { name: 'About', href: '/about', icon: Info },
+  { name: 'Leadership', href: '/leadership', icon: Crown },
+  { name: 'Admin', href: '/admin', icon: User },
+];
 export default function Layout({ children }: LayoutProps) {
   const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -64,6 +70,7 @@ export default function Layout({ children }: LayoutProps) {
   const getNavigation = () => {
     if (!isAuthenticated) return publicNavigation;
     if (user?.role === 'lawyer') return lawyerNavigation;
+    if (user?.role === 'admin') return adminNavigation;
     return clientNavigation;
   };
 

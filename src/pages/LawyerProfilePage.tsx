@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +37,20 @@ const LawyerProfilePage = () => {
     license: 'PBC-2014-12345',
     hourlyRate: '15,000'
   });
+
+  const [status, setStatus] = useState<'pending' | 'approved' | 'rejected'>(user?.status as any || 'pending');
+
+  useEffect(() => {
+    if (!user?.email) return;
+    try {
+      const stored = localStorage.getItem('lawyer_applications');
+      if (stored) {
+        const apps = JSON.parse(stored) as Array<any>;
+        const app = apps.find((a) => a.email === user.email);
+        if (app && app.status) setStatus(app.status);
+      }
+    } catch {}
+  }, [user]);
 
   const handleInputChange = (field: string, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
@@ -113,9 +127,15 @@ const LawyerProfilePage = () => {
                     </h3>
                   )}
                   
-                  <Badge variant="secondary" className="mb-4">
-                    Verified Lawyer
-                  </Badge>
+                  {status === 'approved' ? (
+                    <Badge variant="secondary" className="mb-4">
+                      Verified Lawyer
+                    </Badge>
+                  ) : status === 'rejected' ? (
+                    <Badge variant="destructive" className="mb-4">Rejected</Badge>
+                  ) : (
+                    <Badge variant="secondary" className="mb-4">Pending Verification</Badge>
+                  )}
                   
                   <div className="flex items-center justify-center mb-2">
                     <div className="flex items-center">
