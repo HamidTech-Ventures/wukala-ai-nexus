@@ -20,6 +20,7 @@ const LoginPage = () => {
   useEffect(() => {
     const element = document.querySelector('.login-form');
     if (element) {
+      element.classList.remove('opacity-0');
       element.classList.add('animate-fade-in');
     }
   }, []);
@@ -113,7 +114,7 @@ const LoginPage = () => {
         </Button>
 
         <div className="max-w-md mx-auto">
-          <div className="login-form bg-card border border-border rounded-2xl p-8 shadow-xl opacity-0">
+          <div className="login-form bg-card border border-border rounded-2xl p-8 shadow-xl opacity-0 transition-all duration-700">
             <div className="text-center mb-8">
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-primary rounded-2xl flex items-center justify-center">
                 <Lock className="w-8 h-8 text-primary-foreground" />

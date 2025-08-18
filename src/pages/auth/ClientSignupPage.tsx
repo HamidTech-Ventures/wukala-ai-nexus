@@ -38,8 +38,8 @@ const ClientSignupPage = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return !emailRegex.test(value) ? 'Please enter a valid email' : '';
       case 'phone':
-        const phoneRegex = /^(\+92|0)?[0-9]{10}$/;
-        return !phoneRegex.test(value) ? 'Please enter a valid phone number' : '';
+        const phoneRegex = /^(\+92|0)?[0-9]{10,11}$/;
+        return !phoneRegex.test(value.replace(/[\s-]/g, '')) ? 'Please enter a valid phone number' : '';
       case 'city':
         return value.length < 2 ? 'Please enter your city' : '';
       case 'password':
