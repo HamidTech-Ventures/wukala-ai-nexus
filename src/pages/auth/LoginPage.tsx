@@ -96,7 +96,7 @@ const LoginPage = () => {
       const element = document.querySelector('.login-form');
       if (element) {
         element.classList.add('animate-scale-in');
-        setTimeout(() => navigate('/'), 600);
+        setTimeout(() => navigate('/chat'), 600);
       }
     }
   };

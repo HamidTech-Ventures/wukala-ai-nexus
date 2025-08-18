@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import OnboardingTour from '@/components/OnboardingTour';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { 
   Send, 
   Mic, 
@@ -34,6 +36,7 @@ interface ChatSession {
 }
 
 export default function ChatPage() {
+  const { showOnboarding, completeOnboarding } = useOnboarding();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -165,7 +168,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-background">
+    <>
+      {showOnboarding && <OnboardingTour onComplete={completeOnboarding} />}
+      <div className="flex h-[calc(100vh-4rem)] bg-background">
       {/* Sidebar - Chat History */}
       <div className="w-80 border-r border-border bg-muted/20">
         <div className="p-4">
@@ -389,5 +394,6 @@ export default function ChatPage() {
         }}
       />
     </div>
+    </>
   );
 }
