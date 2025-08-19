@@ -60,35 +60,35 @@ const HomePage = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-card p-8 rounded-2xl shadow-md border border-border hover:shadow-lg transition-shadow">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+              <div className="bg-card p-6 lg:p-8 rounded-2xl shadow-md border border-border hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-center w-12 h-12 bg-gradient-primary rounded-xl mb-6">
                   <Shield className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Trusted & Secure</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-lg lg:text-xl font-semibold text-foreground mb-4">Trusted & Secure</h3>
+                <p className="text-muted-foreground text-sm lg:text-base">
                   All lawyers are verified through our rigorous Bar Council verification process, 
                   ensuring you connect with qualified legal professionals.
                 </p>
               </div>
 
-              <div className="bg-card p-8 rounded-2xl shadow-md border border-border hover:shadow-lg transition-shadow">
+              <div className="bg-card p-6 lg:p-8 rounded-2xl shadow-md border border-border hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-center w-12 h-12 bg-gradient-primary rounded-xl mb-6">
                   <Users className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Expert Network</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-lg lg:text-xl font-semibold text-foreground mb-4">Expert Network</h3>
+                <p className="text-muted-foreground text-sm lg:text-base">
                   Access Pakistan's largest network of qualified lawyers across all legal 
                   specializations and jurisdictions.
                 </p>
               </div>
 
-              <div className="bg-card p-8 rounded-2xl shadow-md border border-border hover:shadow-lg transition-shadow">
+              <div className="bg-card p-6 lg:p-8 rounded-2xl shadow-md border border-border hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-center w-12 h-12 bg-gradient-primary rounded-xl mb-6">
                   <Clock className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">24/7 AI Support</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-lg lg:text-xl font-semibold text-foreground mb-4">24/7 AI Support</h3>
+                <p className="text-muted-foreground text-sm lg:text-base">
                   Get instant legal guidance with our AI assistant, available round the clock 
                   for immediate consultation and document assistance.
                 </p>

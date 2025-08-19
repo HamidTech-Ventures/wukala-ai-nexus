@@ -129,48 +129,48 @@ const AdminPanel = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-card border border-border rounded-lg p-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+            <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Applications</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Total Applications</p>
+                  <p className="text-xl lg:text-2xl font-bold text-foreground">{stats.total}</p>
                 </div>
-                <User className="w-8 h-8 text-primary" />
+                <User className="w-6 h-6 lg:w-8 lg:h-8 text-primary" />
               </div>
             </div>
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Pending Review</p>
-                  <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Pending Review</p>
+                  <p className="text-xl lg:text-2xl font-bold text-yellow-600">{stats.pending}</p>
                 </div>
-                <Clock className="w-8 h-8 text-yellow-600" />
+                <Clock className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-600" />
               </div>
             </div>
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Approved</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Approved</p>
+                  <p className="text-xl lg:text-2xl font-bold text-green-600">{stats.approved}</p>
                 </div>
-                <Check className="w-8 h-8 text-green-600" />
+                <Check className="w-6 h-6 lg:w-8 lg:h-8 text-green-600" />
               </div>
             </div>
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Rejected</p>
-                  <p className="text-2xl font-bold text-red-600">{stats.rejected}</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Rejected</p>
+                  <p className="text-xl lg:text-2xl font-bold text-red-600">{stats.rejected}</p>
                 </div>
-                <X className="w-8 h-8 text-red-600" />
+                <X className="w-6 h-6 lg:w-8 lg:h-8 text-red-600" />
               </div>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-card border border-border rounded-lg p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-4">
+          <div className="bg-card border border-border rounded-lg p-4 lg:p-6 mb-8">
+            <div className="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
               <div className="flex-1">
                 <div className="relative">
                   <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
@@ -182,7 +182,7 @@ const AdminPanel = () => {
                   />
                 </div>
               </div>
-              <div className="w-full md:w-48">
+              <div className="w-full lg:w-48">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger>
                     <Filter className="w-4 h-4 mr-2" />
@@ -210,39 +210,44 @@ const AdminPanel = () => {
                 <div
                   key={application.id}
                   data-application-id={application.id}
-                  className="p-6 hover:bg-muted/50 transition-colors"
+                  className="p-4 lg:p-6 hover:bg-muted/50 transition-colors"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <Avatar className="w-12 h-12">
-                        <AvatarFallback className="bg-gradient-primary text-primary-foreground">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                    <div className="flex items-center space-x-3 lg:space-x-4">
+                      <Avatar className="w-10 h-10 lg:w-12 lg:h-12 flex-shrink-0">
+                        <AvatarFallback className="bg-gradient-primary text-primary-foreground text-sm">
                           {application.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <h3 className="font-semibold text-foreground">{application.name}</h3>
-                        <p className="text-sm text-muted-foreground">{application.email}</p>
-                        <p className="text-sm text-muted-foreground">Bar Council: {application.barCouncilNumber}</p>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-foreground text-sm lg:text-base truncate">{application.name}</h3>
+                        <p className="text-xs lg:text-sm text-muted-foreground truncate">{application.email}</p>
+                        <p className="text-xs lg:text-sm text-muted-foreground">Bar Council: {application.barCouncilNumber}</p>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p className="text-sm text-muted-foreground">{formatDate(application.submittedAt)}</p>
-                        <p className="text-sm text-muted-foreground">{application.city}</p>
+                    <div className="flex flex-col lg:flex-row lg:items-center space-y-3 lg:space-y-0 lg:space-x-4">
+                      <div className="flex items-center justify-between lg:block lg:text-right">
+                        <div>
+                          <p className="text-xs lg:text-sm text-muted-foreground">{formatDate(application.submittedAt)}</p>
+                          <p className="text-xs lg:text-sm text-muted-foreground">{application.city}</p>
+                        </div>
+                        <div className="lg:mt-2">
+                          {getStatusBadge(application.status)}
+                        </div>
                       </div>
-                      {getStatusBadge(application.status)}
                       
-                      <div className="flex space-x-2">
+                      <div className="flex flex-wrap gap-2">
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => setSelectedApplication(application)}
+                              className="text-xs"
                             >
-                              <Eye className="w-4 h-4 mr-2" />
-                              View Details
+                              <Eye className="w-3 h-3 lg:w-4 lg:h-4 lg:mr-2" />
+                              <span className="hidden lg:inline">View Details</span>
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -337,18 +342,19 @@ const AdminPanel = () => {
                             <Button
                               size="sm"
                               onClick={() => handleStatusChange(application.id, 'approved')}
-                              className="bg-green-600 hover:bg-green-700"
+                              className="bg-green-600 hover:bg-green-700 text-xs"
                             >
-                              <Check className="w-4 h-4 mr-2" />
-                              Approve
+                              <Check className="w-3 h-3 lg:w-4 lg:h-4 lg:mr-2" />
+                              <span className="hidden lg:inline">Approve</span>
                             </Button>
                             <Button
                               size="sm"
                               variant="destructive"
                               onClick={() => handleStatusChange(application.id, 'rejected')}
+                              className="text-xs"
                             >
-                              <X className="w-4 h-4 mr-2" />
-                              Reject
+                              <X className="w-3 h-3 lg:w-4 lg:h-4 lg:mr-2" />
+                              <span className="hidden lg:inline">Reject</span>
                             </Button>
                           </>
                         )}

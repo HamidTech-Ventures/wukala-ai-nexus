@@ -90,24 +90,24 @@ export default function Layout({ children }: LayoutProps) {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container flex h-14 lg:h-16 items-center justify-between px-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-primary">
-              <Scale className="h-6 w-6 text-primary-foreground" />
+          <Link to="/" className="flex items-center space-x-2 lg:space-x-3">
+            <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-xl bg-gradient-primary">
+              <Scale className="h-4 w-4 lg:h-6 lg:w-6 text-primary-foreground" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-gradient-primary font-serif">
+              <span className="text-lg lg:text-xl font-bold text-gradient-primary font-serif">
                 Wukala-GPT
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-[10px] lg:text-xs text-muted-foreground">
                 Legal AI Assistant
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-6">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -145,7 +145,7 @@ export default function Layout({ children }: LayoutProps) {
             </Button>
 
             {!isAuthenticated ? (
-              <div className="hidden md:flex space-x-2">
+              <div className="hidden lg:flex space-x-2">
                 <Button 
                   asChild 
                   variant="outline"
@@ -161,8 +161,8 @@ export default function Layout({ children }: LayoutProps) {
                 </Button>
               </div>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">
+              <div className="hidden lg:flex items-center space-x-2">
+                <span className="text-sm text-muted-foreground hidden xl:block">
                   Welcome, {user?.name}
                 </span>
                 <Button
@@ -181,7 +181,7 @@ export default function Layout({ children }: LayoutProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="md:hidden h-9 w-9 p-0"
+              className="lg:hidden h-9 w-9 p-0"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
@@ -196,8 +196,8 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border bg-background/95 backdrop-blur">
-            <nav className="container py-4">
+          <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur">
+            <nav className="container py-4 px-4">
               <div className="flex flex-col space-y-2">
                 {navigation.map((item) => {
                   const isActive = location.pathname === item.href;
@@ -207,7 +207,7 @@ export default function Layout({ children }: LayoutProps) {
                       to={item.href}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={cn(
-                        'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                        'flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200',
                         isActive
                           ? 'bg-primary text-primary-foreground'
                           : 'text-muted-foreground hover:text-foreground hover:bg-accent'
@@ -221,10 +221,10 @@ export default function Layout({ children }: LayoutProps) {
                 {!isAuthenticated ? (
                   <div className="mt-4 space-y-2">
                     <Button asChild variant="outline" className="w-full">
-                      <Link to="/login">Sign In</Link>
+                      <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
                     </Button>
                     <Button asChild className="w-full bg-gradient-primary">
-                      <Link to="/auth/role">Get Started</Link>
+                      <Link to="/auth/role" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
                     </Button>
                   </div>
                 ) : (
@@ -235,7 +235,10 @@ export default function Layout({ children }: LayoutProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={handleLogout}
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileMenuOpen(false);
+                      }}
                       className="w-full justify-start"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
@@ -257,17 +260,17 @@ export default function Layout({ children }: LayoutProps) {
       {/* Footer - Show on all pages except AI Assistant */}
       {location.pathname !== '/chat' && (
         <footer className="border-t border-border bg-muted/30">
-          <div className="container py-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="flex items-center space-x-3 mb-4 md:mb-0">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
-                  <Scale className="h-4 w-4 text-primary-foreground" />
+          <div className="container py-6 lg:py-8 px-4">
+            <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
+              <div className="flex items-center space-x-3">
+                <div className="flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center rounded-lg bg-gradient-primary">
+                  <Scale className="h-3 w-3 lg:h-4 lg:w-4 text-primary-foreground" />
                 </div>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs lg:text-sm text-muted-foreground text-center lg:text-left">
                   © 2024 Wukala-GPT. Transforming legal services in Pakistan.
                 </span>
               </div>
-              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-4 text-xs lg:text-sm text-muted-foreground">
                 <a href="#" className="hover:text-foreground transition-colors">
                   Privacy Policy
                 </a>

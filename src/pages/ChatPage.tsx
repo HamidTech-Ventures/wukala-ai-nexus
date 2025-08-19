@@ -172,7 +172,7 @@ export default function ChatPage() {
       {showOnboarding && <OnboardingTour onComplete={completeOnboarding} />}
       <div className="flex h-[calc(100vh-4rem)] bg-background">
       {/* Sidebar - Chat History */}
-      <div className="w-80 border-r border-border bg-muted/20">
+      <div className="hidden lg:flex lg:w-80 border-r border-border bg-muted/20 flex-col">
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Chat History</h2>
@@ -193,7 +193,7 @@ export default function ChatPage() {
           </div>
         </div>
 
-        <ScrollArea className="h-[calc(100%-8rem)]">
+        <ScrollArea className="flex-1">
           <div className="px-4 pb-4">
             {chatSessions.map((session) => (
               <div
@@ -229,23 +229,23 @@ export default function ChatPage() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Chat Header */}
-        <div className="p-4 border-b border-border bg-card/50">
+        <div className="p-3 lg:p-4 border-b border-border bg-card/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-primary">
-                <Bot className="h-5 w-5 text-primary-foreground" />
+              <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-full bg-gradient-primary">
+                <Bot className="h-4 w-4 lg:h-5 lg:w-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold">Legal AI Assistant</h1>
-                <p className="text-sm text-muted-foreground">
+                <h1 className="text-base lg:text-lg font-semibold">Legal AI Assistant</h1>
+                <p className="text-xs lg:text-sm text-muted-foreground">
                   Powered by Pakistani Legal Database
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="text-xs lg:text-sm">
                 New Chat
               </Button>
             </div>
@@ -253,42 +253,42 @@ export default function ChatPage() {
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 p-2 lg:p-4">
           <div className="space-y-4 max-w-4xl mx-auto">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={cn(
-                  'flex items-start space-x-3 animate-fade-in',
+                  'flex items-start space-x-2 lg:space-x-3 animate-fade-in',
                   message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''
                 )}
               >
                 <div className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-full',
+                  'flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center rounded-full flex-shrink-0',
                   message.sender === 'user' 
                     ? 'bg-primary text-primary-foreground' 
                     : 'bg-muted'
                 )}>
                   {message.sender === 'user' ? (
-                    <User className="h-4 w-4" />
+                    <User className="h-3 w-3 lg:h-4 lg:w-4" />
                   ) : (
-                    <Bot className="h-4 w-4" />
+                    <Bot className="h-3 w-3 lg:h-4 lg:w-4" />
                   )}
                 </div>
                 
                 <div className={cn(
-                  'flex-1 max-w-lg',
+                  'flex-1 max-w-[85%] lg:max-w-lg',
                   message.sender === 'user' ? 'flex justify-end' : ''
                 )}>
                   <div className={cn(
-                    'p-3 rounded-2xl',
+                    'p-2 lg:p-3 rounded-2xl',
                     message.sender === 'user' 
                       ? 'chat-bubble-user' 
                       : 'chat-bubble-ai'
                   )}>
-                    <p className="text-sm leading-relaxed">{message.content}</p>
+                    <p className="text-xs lg:text-sm leading-relaxed break-words">{message.content}</p>
                     <p className={cn(
-                      'text-xs mt-2 opacity-70',
+                      'text-[10px] lg:text-xs mt-1 lg:mt-2 opacity-70',
                       message.sender === 'user' ? 'text-primary-foreground' : 'text-muted-foreground'
                     )}>
                       {formatTime(message.timestamp)}
@@ -300,11 +300,11 @@ export default function ChatPage() {
             
             {/* Typing Indicator */}
             {isTyping && (
-              <div className="flex items-start space-x-3 animate-fade-in">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                  <Bot className="h-4 w-4" />
+              <div className="flex items-start space-x-2 lg:space-x-3 animate-fade-in">
+                <div className="flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center rounded-full bg-muted">
+                  <Bot className="h-3 w-3 lg:h-4 lg:w-4" />
                 </div>
-                <div className="flex-1 max-w-lg">
+                <div className="flex-1 max-w-[85%] lg:max-w-lg">
                   <div className="chat-bubble-ai">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-current rounded-full animate-typing"></div>
@@ -321,7 +321,7 @@ export default function ChatPage() {
         </ScrollArea>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-border bg-card/50">
+        <div className="p-2 lg:p-4 border-t border-border bg-card/50">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-end space-x-2">
               <div className="flex-1 relative">
@@ -330,30 +330,30 @@ export default function ChatPage() {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="pr-20 min-h-[44px] resize-none"
+                  className="pr-16 lg:pr-20 min-h-[40px] lg:min-h-[44px] resize-none text-sm"
                 />
                 <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleFileUpload}
-                    className="h-8 w-8 p-0"
+                    className="h-6 w-6 lg:h-8 lg:w-8 p-0"
                   >
-                    <Paperclip className="h-4 w-4" />
+                    <Paperclip className="h-3 w-3 lg:h-4 lg:w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleVoiceRecord}
                     className={cn(
-                      'h-8 w-8 p-0',
+                      'h-6 w-6 lg:h-8 lg:w-8 p-0',
                       isRecording ? 'text-destructive animate-pulse' : ''
                     )}
                   >
                     {isRecording ? (
-                      <MicOff className="h-4 w-4" />
+                      <MicOff className="h-3 w-3 lg:h-4 lg:w-4" />
                     ) : (
-                      <Mic className="h-4 w-4" />
+                      <Mic className="h-3 w-3 lg:h-4 lg:w-4" />
                     )}
                   </Button>
                 </div>
@@ -362,9 +362,9 @@ export default function ChatPage() {
               <Button 
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim()}
-                className="h-11 px-6 bg-gradient-primary hover:shadow-md transition-all duration-200"
+                className="h-10 lg:h-11 px-4 lg:px-6 bg-gradient-primary hover:shadow-md transition-all duration-200"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-3 w-3 lg:h-4 lg:w-4" />
               </Button>
             </div>
             

@@ -167,7 +167,7 @@ const LawyerSignupPage = () => {
         <p className="text-muted-foreground">Let's start with your basic details</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         <div className="space-y-2">
           <Label htmlFor="fullName">Full Name</Label>
           <Input
@@ -272,7 +272,7 @@ const LawyerSignupPage = () => {
           {errors.barCouncilNumber && <p className="text-sm text-destructive">{errors.barCouncilNumber}</p>}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           <div className="space-y-2">
             <Label htmlFor="degreeTitle">Degree Title</Label>
             <Input
