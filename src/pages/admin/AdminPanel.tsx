@@ -37,9 +37,11 @@ const AdminPanel = () => {
   const [selectedApplication, setSelectedApplication] = useState<LawyerApplication | null>(null);
 
   useEffect(() => {
+    // Only redirect if user is loaded and is not admin
     if (user && user.role !== 'admin') {
       navigate('/');
     }
+    // Don't redirect if user is null (still loading) or if user is admin
   }, [user, navigate]);
   const [applications, setApplications] = useState<LawyerApplication[]>([]);
 
