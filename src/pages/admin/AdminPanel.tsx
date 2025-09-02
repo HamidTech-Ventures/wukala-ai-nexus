@@ -81,12 +81,9 @@ const AdminPanel = () => {
     } catch {}
   }, []);
 
+  // Remove the problematic CSS animation that might be causing visual issues
   useEffect(() => {
-    // Use CSS animation class instead
-    const element = document.querySelector('.admin-content');
-    if (element) {
-      element.classList.add('animate-fade-in');
-    }
+    console.log('AdminPanel animation effect running');
   }, []);
 
   const filteredApplications = applications.filter(app => {
@@ -149,7 +146,7 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="admin-content opacity-0 transition-all duration-700">
+        <div className="admin-content">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Admin Panel</h1>
