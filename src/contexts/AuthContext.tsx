@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (userData: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,13 +32,24 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load persisted auth on mount
   useEffect(() => {
+    console.log('AuthContext: Loading persisted auth...');
     try {
       const stored = localStorage.getItem('auth_user');
-      if (stored) setUser(JSON.parse(stored));
-    } catch {}
+      console.log('AuthContext: Stored user data:', stored);
+      if (stored) {
+        const userData = JSON.parse(stored);
+        console.log('AuthContext: Parsed user data:', userData);
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('AuthContext: Error loading persisted auth:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const login = (userData: User) => {
@@ -63,6 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     isAuthenticated,
+    isLoading,
   };
 
   return (

@@ -30,19 +30,47 @@ interface LawyerApplication {
 }
 
 const AdminPanel = () => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedApplication, setSelectedApplication] = useState<LawyerApplication | null>(null);
 
   useEffect(() => {
-    // Only redirect if user is loaded and is not admin
-    if (user && user.role !== 'admin') {
-      navigate('/');
+    console.log('AdminPanel useEffect - isLoading:', isLoading, 'user:', user);
+    console.log('AdminPanel useEffect - user role:', user?.role);
+    
+    // Wait for auth to fully load before making navigation decisions
+    if (isLoading) {
+      console.log('Auth is still loading...');
+      return; // Still loading auth, don't redirect yet
     }
-    // Don't redirect if user is null (still loading) or if user is admin
-  }, [user, navigate]);
+    
+    // Only redirect if user is loaded and is not admin
+    if (!user || user.role !== 'admin') {
+      console.log('User is not admin, redirecting to home');
+      navigate('/');
+    } else {
+      console.log('User is admin, staying on admin page');
+    }
+  }, [user, isLoading, navigate]);
+
+  // Show loading state while authentication is being determined
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render admin panel if user is not admin (will redirect via useEffect)
+  if (!user || user.role !== 'admin') {
+    return null;
+  }
   const [applications, setApplications] = useState<LawyerApplication[]>([]);
 
   // Load applications from localStorage
