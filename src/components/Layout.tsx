@@ -3,6 +3,14 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { 
   MessageSquare, 
   FileText, 
@@ -18,7 +26,8 @@ import {
   Info,
   Crown,
   User,
-  LogOut
+  LogOut,
+  ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -33,9 +42,6 @@ const publicNavigation = [
 ];
 
 const clientNavigation = [
-  { name: 'Home', href: '/', icon: Home },
-  { name: 'About', href: '/about', icon: Info },
-  { name: 'Leadership', href: '/leadership', icon: Crown },
   { name: 'AI Assistant', href: '/chat', icon: MessageSquare },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Find Lawyers', href: '/lawyers', icon: Users },
@@ -44,12 +50,9 @@ const clientNavigation = [
 ];
 
 const lawyerNavigation = [
-  { name: 'Home', href: '/', icon: Home },
-  { name: 'About', href: '/about', icon: Info },
-  { name: 'Leadership', href: '/leadership', icon: Crown },
   { name: 'AI Assistant', href: '/chat', icon: MessageSquare },
   { name: 'Documents', href: '/documents', icon: FileText },
-  { name: 'My Profile', href: '/lawyer-profile', icon: User },
+  { name: 'Find Lawyers', href: '/lawyers', icon: Users },
   { name: 'Legal News', href: '/news', icon: Newspaper },
   { name: 'Dictionary', href: '/dictionary', icon: BookOpen },
 ];
@@ -162,18 +165,42 @@ export default function Layout({ children }: LayoutProps) {
               </div>
             ) : (
               <div className="hidden lg:flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground hidden xl:block">
-                  Welcome, {user?.name}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="h-9 px-3"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 px-3 flex items-center space-x-2"
+                    >
+                      <User className="h-4 w-4" />
+                      <span className="hidden xl:block">{user?.name}</span>
+                      <ChevronDown className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user?.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {user?.role === 'lawyer' && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/lawyer-profile" className="cursor-pointer">
+                          <User className="mr-2 h-4 w-4" />
+                          My Profile
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             )}
 
@@ -229,9 +256,24 @@ export default function Layout({ children }: LayoutProps) {
                   </div>
                 ) : (
                   <div className="mt-4 space-y-2">
-                    <p className="text-sm text-muted-foreground px-3">
-                      Welcome, {user?.name}
-                    </p>
+                    <div className="px-3 py-2 border-b border-border">
+                      <p className="text-sm font-medium">{user?.name}</p>
+                      <p className="text-xs text-muted-foreground">{user?.email}</p>
+                    </div>
+                    {user?.role === 'lawyer' && (
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Link to="/lawyer-profile">
+                          <User className="h-4 w-4 mr-2" />
+                          My Profile
+                        </Link>
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
