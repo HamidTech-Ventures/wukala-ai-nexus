@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Eye, Check, X, Clock, Filter, User, FileText, Video } from 'lucide-react';
+import { Search, Eye, Check, X, Clock, Filter, User, FileText, Video, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -148,9 +148,19 @@ const AdminPanel = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="admin-content">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Admin Panel</h1>
-            <p className="text-muted-foreground">Manage lawyer verification applications</p>
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Admin Panel</h1>
+              <p className="text-muted-foreground">Manage lawyer verification applications</p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Home</span>
+            </Button>
           </div>
 
           {/* Stats Cards */}
