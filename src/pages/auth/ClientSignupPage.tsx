@@ -80,13 +80,19 @@ const ClientSignupPage = () => {
         role: 'client' as const
       };
       
-      login(userData);
-      
       // Success animation
       const element = document.querySelector('.signup-form');
       if (element) {
         element.classList.add('animate-scale-in');
-        setTimeout(() => navigate('/'), 600);
+        setTimeout(() => {
+          navigate('/verify-otp', { 
+            state: { 
+              email: formData.email, 
+              userType: 'client',
+              userData: userData
+            } 
+          });
+        }, 600);
       }
     }
   };

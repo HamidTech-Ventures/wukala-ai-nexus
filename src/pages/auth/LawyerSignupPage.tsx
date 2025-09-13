@@ -151,12 +151,18 @@ const LawyerSignupPage = () => {
       status: 'pending' as const,
     };
     
-    login(userData);
-    
     const element = document.querySelector('.step-content');
     if (element) {
       element.classList.add('animate-scale-in');
-      setTimeout(() => navigate('/lawyer-profile'), 600);
+      setTimeout(() => {
+        navigate('/verify-otp', { 
+          state: { 
+            email: formData.email, 
+            userType: 'lawyer',
+            userData: userData
+          } 
+        });
+      }, 600);
     }
   };
 

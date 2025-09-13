@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Mail, RefreshCw } from 'lucide-react';
 
 export default function OTPVerificationPage() {
@@ -13,10 +14,12 @@ export default function OTPVerificationPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { login } = useAuth();
   
-  // Get email from navigation state
+  // Get email and user data from navigation state
   const email = location.state?.email || 'your email';
   const userType = location.state?.userType || 'user';
+  const userData = location.state?.userData;
 
   const handleVerifyOTP = async () => {
     if (otp.length !== 6) {
@@ -37,6 +40,11 @@ export default function OTPVerificationPage() {
           title: "Verification Successful",
           description: "Your account has been verified successfully",
         });
+        
+        // Log in the user with stored userData
+        if (userData) {
+          login(userData);
+        }
         
         // Navigate based on user type
         if (userType === 'lawyer') {
