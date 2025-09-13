@@ -20,6 +20,7 @@ import RoleSelectionPage from "./pages/auth/RoleSelectionPage";
 import ClientSignupPage from "./pages/auth/ClientSignupPage";
 import LawyerSignupPage from "./pages/auth/LawyerSignupPage";
 import LoginPage from "./pages/auth/LoginPage";
+import OTPVerificationPage from "./pages/auth/OTPVerificationPage";
 import ProfilePage from "./pages/auth/ProfilePage";
 import AdminPanel from "./pages/admin/AdminPanel";
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/signup/client" element={<ClientSignupPage />} />
           <Route path="/signup/lawyer" element={<LawyerSignupPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/verify-otp" element={<OTPVerificationPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminPanel />} />
           
