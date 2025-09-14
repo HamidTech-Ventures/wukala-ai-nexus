@@ -183,32 +183,32 @@ export default function DocumentsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container py-8">
+      <div className="container px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold font-serif mb-2">Document Management</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif mb-2">Document Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Upload, organize, and manage your legal documents securely.
           </p>
         </div>
 
         {/* Upload Area */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
+        <Card className="mb-6 sm:mb-8">
+          <CardContent className="p-4 sm:p-6">
             <div
               className={cn(
-                'border-2 border-dashed border-border rounded-xl p-8 text-center transition-all duration-200',
+                'border-2 border-dashed border-border rounded-xl p-4 sm:p-6 lg:p-8 text-center transition-all duration-200',
                 isDragging ? 'border-primary bg-primary/5' : 'hover:border-primary/50'
               )}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
-              <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">
+              <Upload className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold mb-2">
                 Drop files here or click to upload
               </h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4">
                 Supports PDF, DOCX, TXT, JPG, PNG up to 10MB
               </p>
               <Button 
@@ -222,7 +222,7 @@ export default function DocumentsPage() {
         </Card>
 
         {/* Filters and Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -233,7 +233,7 @@ export default function DocumentsPage() {
             />
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -268,7 +268,7 @@ export default function DocumentsPage() {
             </Button>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -301,10 +301,9 @@ export default function DocumentsPage() {
           </Card>
         ) : (
           <div className={cn(
-            'gap-6',
             viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-              : 'space-y-4'
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6'
+              : 'space-y-3 sm:space-y-4'
           )}>
             {filteredDocuments.map((document) => (
               <Card 

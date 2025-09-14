@@ -193,19 +193,19 @@ export default function LawyersPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container py-8">
+      <div className="container px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold font-serif mb-2">Find Legal Experts</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif mb-2">Find Legal Experts</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Connect with qualified lawyers across Pakistan for expert legal assistance.
           </p>
         </div>
 
         {/* Search and Filters */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="mb-6 sm:mb-8">
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -272,14 +272,14 @@ export default function LawyersPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {filteredLawyers.map((lawyer) => (
               <Card key={lawyer.id} className="group hover:shadow-lg transition-all duration-200 animate-fade-in">
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-4">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-start space-x-3 sm:space-x-4">
                     {/* Avatar */}
                     <div className="relative">
-                      <Avatar className="h-16 w-16">
+                      <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                         <AvatarImage src={lawyer.avatar} alt={lawyer.name} />
                         <AvatarFallback className="bg-gradient-primary text-primary-foreground">
                           {lawyer.name.split(' ').map(n => n[0]).join('')}
@@ -300,7 +300,7 @@ export default function LawyersPage() {
                       <div className="flex items-start justify-between">
                         <div>
                           <div className="flex items-center space-x-2">
-                            <h3 className="text-lg font-semibold">{lawyer.name}</h3>
+                            <h3 className="text-base sm:text-lg font-semibold">{lawyer.name}</h3>
                             {lawyer.verified && (
                               <div title="Verified Lawyer">
                                 <Award className="h-4 w-4 text-gold" />
@@ -318,7 +318,7 @@ export default function LawyersPage() {
                             </div>
                           </div>
 
-                          <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-muted-foreground">
                             <div className="flex items-center">
                               <MapPin className="h-3 w-3 mr-1" />
                               {lawyer.location}
@@ -335,7 +335,7 @@ export default function LawyersPage() {
                         </div>
 
                         <div className="text-right">
-                          <div className="text-lg font-semibold text-primary">
+                          <div className="text-base sm:text-lg font-semibold text-primary">
                             Rs. {lawyer.hourlyRate.toLocaleString()}/hr
                           </div>
                           <Button
@@ -344,8 +344,9 @@ export default function LawyersPage() {
                             className="mt-2 bg-gradient-primary hover:shadow-md transition-all duration-200"
                             size="sm"
                           >
-                            <MessageSquare className="h-4 w-4 mr-2" />
-                            Chat Now
+                            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                            <span className="hidden sm:inline">Chat Now</span>
+                            <span className="sm:hidden">Chat</span>
                           </Button>
                         </div>
                       </div>

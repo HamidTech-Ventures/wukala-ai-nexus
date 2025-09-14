@@ -102,25 +102,25 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background flex items-center justify-center">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background flex items-center justify-center px-4">
+      <div className="container mx-auto">
         <Button
           variant="ghost"
           onClick={() => navigate('/auth/role')}
-          className="absolute top-8 left-8"
+          className="absolute top-4 left-4 sm:top-8 sm:left-8"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
 
         <div className="max-w-md mx-auto">
-          <div className="login-form bg-card border border-border rounded-2xl p-8 shadow-xl opacity-0 transition-all duration-700">
+          <div className="login-form bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-xl opacity-0 transition-all duration-700">
             <div className="text-center mb-8">
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-primary rounded-2xl flex items-center justify-center">
                 <Lock className="w-8 h-8 text-primary-foreground" />
               </div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
-              <p className="text-muted-foreground">Sign in to your Wukala-GPT account</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Sign in to your Wukala-GPT account</p>
               <div className="mt-3 p-3 bg-muted/30 rounded-lg">
                 <p className="text-xs text-muted-foreground">
                   <strong>Admin Access:</strong> admin@wukala.com / admin123

@@ -98,28 +98,29 @@ const ClientSignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background px-4">
+      <div className="container mx-auto py-6 sm:py-8">
         <Button
           variant="ghost"
           onClick={() => navigate('/auth/role')}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
+          size="sm"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Role Selection
         </Button>
 
         <div className="max-w-md mx-auto">
-          <div className="signup-form bg-card border border-border rounded-2xl p-8 shadow-xl opacity-0 transition-all duration-700">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-primary rounded-2xl flex items-center justify-center">
-                <User className="w-8 h-8 text-primary-foreground" />
+          <div className="signup-form bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-xl opacity-0 transition-all duration-700">
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-primary rounded-2xl flex items-center justify-center">
+                <User className="w-6 h-6 sm:w-8 sm:h-8 text-primary-foreground" />
               </div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Create Account</h1>
-              <p className="text-muted-foreground">Join as a client and get legal assistance</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Create Account</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Join as a client and get legal assistance</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <div className="relative">

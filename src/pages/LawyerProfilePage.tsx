@@ -62,16 +62,16 @@ const LawyerProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-background py-6 sm:py-8">
       <div className="container max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
                 Professional Profile
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Manage your professional information and showcase your expertise
               </p>
             </div>
@@ -94,15 +94,15 @@ const LawyerProfilePage = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Left Column - Profile Overview */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* Profile Card */}
             <Card className="overflow-hidden">
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="text-center">
                   <div className="relative mb-4">
-                    <div className="w-24 h-24 mx-auto bg-gradient-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-gradient-primary rounded-full flex items-center justify-center text-white text-xl sm:text-2xl font-bold">
                       {profileData.name.split(' ').map(n => n[0]).join('')}
                     </div>
                     {isEditing && (
@@ -122,7 +122,7 @@ const LawyerProfilePage = () => {
                       className="text-center font-semibold text-lg mb-2"
                     />
                   ) : (
-                    <h3 className="font-semibold text-lg text-foreground mb-2">
+                    <h3 className="font-semibold text-base sm:text-lg text-foreground mb-2">
                       {profileData.name}
                     </h3>
                   )}

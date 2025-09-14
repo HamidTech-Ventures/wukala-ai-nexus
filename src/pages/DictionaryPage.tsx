@@ -149,14 +149,14 @@ export default function DictionaryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-gradient-primary mb-2">Legal Dictionary</h1>
-            <p className="text-muted-foreground">Comprehensive collection of legal books, acts, and documents</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-primary mb-2">Legal Dictionary</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Comprehensive collection of legal books, acts, and documents</p>
           </div>
-          <div className="flex items-center space-x-3 mt-4 md:mt-0">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'outline'}
               size="sm"
@@ -178,9 +178,9 @@ export default function DictionaryPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Sidebar Filters */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* Search */}
             <Card className="bg-glass border-white/20">
               <CardHeader>
@@ -261,7 +261,7 @@ export default function DictionaryPage() {
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-4 sm:space-y-6">
             {/* Sort Controls */}
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center space-x-2">
@@ -303,8 +303,8 @@ export default function DictionaryPage() {
             {/* Books Grid/List */}
             <div className={cn(
               viewMode === 'grid' 
-                ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'
-                : 'space-y-4'
+                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
+                : 'space-y-3 sm:space-y-4'
             )}>
               {sortedBooks.map(book => (
                 <Card 

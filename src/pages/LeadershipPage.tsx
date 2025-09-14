@@ -37,13 +37,13 @@ const LeadershipPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-background via-muted/10 to-background">
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-background via-muted/10 to-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 font-serif">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 font-serif">
               Our Leadership
             </h1>
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
               Meet the visionaries behind Pakistan's legal technology revolution
             </p>
           </div>
@@ -51,12 +51,12 @@ const LeadershipPage = () => {
       </section>
 
       {/* Leadership Team */}
-      <section className="py-20">
+      <section className="py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="space-y-20">
+            <div className="space-y-12 sm:space-y-16 lg:space-y-20">
               {leaders.map((leader, index) => (
-                <div key={leader.name} className={`grid lg:grid-cols-2 gap-12 items-center ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}>
+                <div key={leader.name} className={`grid lg:grid-cols-2 gap-8 sm:gap-12 items-center ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}>
                   {/* Image */}
                   <div className={`${index % 2 === 1 ? 'lg:col-start-2' : ''}`}>
                     <div className="relative">
@@ -76,15 +76,15 @@ const LeadershipPage = () => {
                   {/* Content */}
                   <div className={`${index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
                     <div className="mb-6">
-                      <h2 className="text-3xl font-bold text-foreground mb-2 font-serif">
+                      <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 font-serif">
                         {leader.name}
                       </h2>
-                      <p className="text-xl text-primary font-medium">
+                      <p className="text-lg sm:text-xl text-primary font-medium">
                         {leader.position}
                       </p>
                     </div>
 
-                    <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                    <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6 sm:mb-8">
                       {leader.bio}
                     </p>
 
@@ -124,18 +124,18 @@ const LeadershipPage = () => {
       </section>
 
       {/* Leadership Philosophy */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-12 sm:py-16 lg:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-bold text-foreground mb-6 font-serif">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4 sm:mb-6 font-serif">
               Our Leadership Philosophy
             </h2>
-            <p className="text-xl text-muted-foreground leading-relaxed mb-12">
+            <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 sm:mb-12">
               We believe in leading by example, fostering innovation, and maintaining 
               the highest ethical standards in everything we do.
             </p>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
               <div className="bg-card p-6 rounded-xl shadow-md border border-border">
                 <div className="w-12 h-12 bg-gradient-primary rounded-xl mx-auto mb-4 flex items-center justify-center">
                   <Users className="w-6 h-6 text-primary-foreground" />

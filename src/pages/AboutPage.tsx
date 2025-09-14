@@ -5,13 +5,13 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-background via-muted/10 to-background">
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-background via-muted/10 to-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 font-serif">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 font-serif leading-tight">
               About Wukala-GPT
             </h1>
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
               Revolutionizing Pakistan's legal landscape through artificial intelligence 
               and human expertise
             </p>
@@ -20,31 +20,31 @@ const AboutPage = () => {
       </section>
 
       {/* Mission Section */}
-      <section className="py-20">
+      <section className="py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
               <div>
                 <div className="flex items-center mb-6">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary mr-4">
                     <Target className="h-6 w-6 text-primary-foreground" />
                   </div>
-                  <h2 className="text-3xl font-bold text-foreground font-serif">Our Mission</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-serif">Our Mission</h2>
                 </div>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6">
                   At Wukala-GPT, we believe that access to quality legal services should not be 
                   a privilege, but a fundamental right. Our mission is to democratize legal 
                   assistance in Pakistan by leveraging cutting-edge artificial intelligence 
                   to bridge the gap between clients and qualified legal professionals.
                 </p>
-                <p className="text-lg text-muted-foreground leading-relaxed">
+                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
                   We are committed to creating a transparent, efficient, and trustworthy 
                   platform where every Pakistani can find the legal help they need, 
                   when they need it.
                 </p>
               </div>
-              <div className="bg-card p-8 rounded-2xl shadow-lg border border-border">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="bg-card p-4 sm:p-6 lg:p-8 rounded-2xl shadow-lg border border-border">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-primary mb-2">10,000+</div>
                     <div className="text-sm text-muted-foreground">Clients Served</div>
@@ -69,7 +69,7 @@ const AboutPage = () => {
       </section>
 
       {/* Vision Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-12 sm:py-16 lg:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -132,19 +132,19 @@ const AboutPage = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-20">
+      <section className="py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-foreground mb-4 font-serif">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4 font-serif">
                 Our Core Values
               </h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-lg sm:text-xl text-muted-foreground">
                 The principles that guide everything we do
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
               <div className="text-center">
                 <div className="flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mx-auto mb-4">
                   <Scale className="w-8 h-8 text-primary-foreground" />

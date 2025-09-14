@@ -71,34 +71,36 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="profile-content bg-card border border-border rounded-2xl p-8 mb-8 shadow-xl opacity-0">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-              <div className="flex items-center space-x-4 mb-4 md:mb-0">
-                <Avatar className="w-20 h-20">
+          <div className="profile-content bg-card border border-border rounded-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 shadow-xl opacity-0">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <Avatar className="w-16 h-16 sm:w-20 sm:h-20">
                   <AvatarImage src={userData.profileImage || ''} />
                   <AvatarFallback className="text-xl font-bold bg-gradient-primary text-primary-foreground">
                     {userData.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h1 className="text-3xl font-bold text-foreground">{userData.name}</h1>
-                  <p className="text-muted-foreground capitalize">{userData.role}</p>
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">{userData.name}</h1>
+                  <p className="text-sm sm:text-base text-muted-foreground capitalize">{userData.role}</p>
                   {getStatusBadge()}
                 </div>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button
                   variant={isEditing ? "outline" : "default"}
                   onClick={() => setIsEditing(!isEditing)}
+                  size="sm"
+                  className="w-full sm:w-auto"
                 >
                   <Edit2 className="w-4 h-4 mr-2" />
                   {isEditing ? 'Cancel' : 'Edit Profile'}
                 </Button>
                 {isEditing && (
-                  <Button onClick={handleSave}>
+                  <Button onClick={handleSave} size="sm" className="w-full sm:w-auto">
                     Save Changes
                   </Button>
                 )}
@@ -119,16 +121,16 @@ const ProfilePage = () => {
           {/* Profile Content */}
           <div className="profile-content bg-card border border-border rounded-2xl shadow-xl opacity-0">
             <Tabs defaultValue="personal" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="personal">Personal Info</TabsTrigger>
-                {userData.role === 'lawyer' && <TabsTrigger value="verification">Verification Info</TabsTrigger>}
-                {userData.role === 'lawyer' && <TabsTrigger value="documents">Documents</TabsTrigger>}
+              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto">
+                <TabsTrigger value="personal" className="text-xs sm:text-sm">Personal Info</TabsTrigger>
+                {userData.role === 'lawyer' && <TabsTrigger value="verification" className="text-xs sm:text-sm">Verification</TabsTrigger>}
+                {userData.role === 'lawyer' && <TabsTrigger value="documents" className="text-xs sm:text-sm">Documents</TabsTrigger>}
               </TabsList>
 
-              <TabsContent value="personal" className="p-8 space-y-6">
-                <h3 className="text-xl font-semibold text-foreground mb-4">Personal Information</h3>
+              <TabsContent value="personal" className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Personal Information</h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
                     <div className="relative">

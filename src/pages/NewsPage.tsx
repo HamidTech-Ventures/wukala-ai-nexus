@@ -126,14 +126,14 @@ export default function NewsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-gradient-primary mb-2">Legal News Hub</h1>
-            <p className="text-muted-foreground">Stay updated with the latest legal developments and court decisions</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-primary mb-2">Legal News Hub</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Stay updated with the latest legal developments and court decisions</p>
           </div>
-          <div className="flex items-center space-x-3 mt-4 md:mt-0">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <Button variant="outline" size="sm">
               <Filter className="h-4 w-4 mr-2" />
               Filter
@@ -145,24 +145,24 @@ export default function NewsPage() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
-            <TabsTrigger value="news" className="flex items-center space-x-2">
-              <Newspaper className="h-4 w-4" />
-              <span>News Feed</span>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-3 sm:w-auto sm:inline-flex">
+            <TabsTrigger value="news" className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4">
+              <Newspaper className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-xs sm:text-sm">News</span>
             </TabsTrigger>
-            <TabsTrigger value="bot" className="flex items-center space-x-2">
-              <Bot className="h-4 w-4" />
-              <span>News Bot</span>
+            <TabsTrigger value="bot" className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4">
+              <Bot className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-xs sm:text-sm">Bot</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center space-x-2">
-              <Settings className="h-4 w-4" />
-              <span>Preferences</span>
+            <TabsTrigger value="settings" className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4">
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-xs sm:text-sm">Settings</span>
             </TabsTrigger>
           </TabsList>
 
           {/* News Feed Tab */}
-          <TabsContent value="news" className="space-y-6">
+          <TabsContent value="news" className="space-y-4 sm:space-y-6">
             {/* Search Bar */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -184,7 +184,7 @@ export default function NewsPage() {
             </div>
 
             {/* News Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredNews.map(article => (
                 <Card key={article.id} className="group hover:shadow-xl transition-all duration-300 bg-glass border-white/20 cursor-pointer">
                   <div className="relative overflow-hidden rounded-t-lg">
@@ -223,11 +223,11 @@ export default function NewsPage() {
           </TabsContent>
 
           {/* News Bot Tab */}
-          <TabsContent value="bot" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <TabsContent value="bot" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Chat Interface */}
               <div className="lg:col-span-2">
-                <Card className="h-[600px] flex flex-col bg-glass border-white/20">
+                <Card className="h-[400px] sm:h-[500px] lg:h-[600px] flex flex-col bg-glass border-white/20">
                   <CardHeader className="border-b border-white/10">
                     <CardTitle className="flex items-center space-x-2">
                       <Bot className="h-5 w-5 text-primary" />
@@ -322,7 +322,7 @@ export default function NewsPage() {
           </TabsContent>
 
           {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-6">
+          <TabsContent value="settings" className="space-y-4 sm:space-y-6">
             <Card className="bg-glass border-white/20">
               <CardHeader>
                 <CardTitle>News Preferences</CardTitle>
