@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -130,6 +131,7 @@ const locations = [
 ];
 
 export default function LawyersPage() {
+  const navigate = useNavigate();
   const [lawyers] = useState<Lawyer[]>(mockLawyers);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialization, setSelectedSpecialization] = useState('All Specializations');
@@ -274,7 +276,11 @@ export default function LawyersPage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {filteredLawyers.map((lawyer) => (
-              <Card key={lawyer.id} className="group hover:shadow-lg transition-all duration-200 animate-fade-in">
+              <Card 
+                key={lawyer.id} 
+                className="group hover:shadow-lg transition-all duration-200 animate-fade-in cursor-pointer"
+                onClick={() => navigate(`/lawyer/${lawyer.id}`)}
+              >
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-start space-x-3 sm:space-x-4">
                     {/* Avatar */}

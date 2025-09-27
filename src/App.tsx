@@ -12,6 +12,7 @@ import LeadershipPage from "./pages/LeadershipPage";
 import ChatPage from "./pages/ChatPage";
 import DocumentsPage from "./pages/DocumentsPage";
 import LawyersPage from "./pages/LawyersPage";
+import LawyerDetailPage from "./pages/LawyerDetailPage";
 import LawyerProfilePage from "./pages/LawyerProfilePage";
 import NewsPage from "./pages/NewsPage";
 import DictionaryPage from "./pages/DictionaryPage";
@@ -50,7 +51,7 @@ const App = () => (
           <Route path="/chat" element={<Layout><ChatPage /></Layout>} />
           <Route path="/documents" element={<Layout><DocumentsPage /></Layout>} />
           <Route path="/lawyers" element={<Layout><LawyersPage /></Layout>} />
-          <Route path="/lawyer/:id" element={<Layout><LawyerProfilePage /></Layout>} />
+          <Route path="/lawyer/:id" element={<Layout><LawyerDetailPage /></Layout>} />
           <Route path="/lawyer-profile" element={<Layout><LawyerProfilePage /></Layout>} />
           <Route path="/news" element={<Layout><NewsPage /></Layout>} />
           <Route path="/dictionary" element={<Layout><DictionaryPage /></Layout>} />
