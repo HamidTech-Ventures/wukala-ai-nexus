@@ -345,7 +345,10 @@ export default function LawyersPage() {
                             Rs. {lawyer.hourlyRate.toLocaleString()}/hr
                           </div>
                           <Button
-                            onClick={() => handleChatWithLawyer(lawyer)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate('/messages');
+                            }}
                             disabled={lawyer.availability === 'offline'}
                             className="mt-2 bg-gradient-primary hover:shadow-md transition-all duration-200"
                             size="sm"

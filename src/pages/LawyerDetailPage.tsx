@@ -276,6 +276,7 @@ export default function LawyerDetailPage() {
                     </div>
                     <div className="flex flex-col space-y-2">
                       <Button
+                        onClick={() => navigate('/messages')}
                         disabled={lawyer.availability === 'offline'}
                         className="bg-gradient-primary hover:shadow-lg transition-all duration-200"
                       >

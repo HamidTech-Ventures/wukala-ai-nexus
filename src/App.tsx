@@ -16,6 +16,7 @@ import LawyerDetailPage from "./pages/LawyerDetailPage";
 import LawyerProfilePage from "./pages/LawyerProfilePage";
 import NewsPage from "./pages/NewsPage";
 import DictionaryPage from "./pages/DictionaryPage";
+import MessagingPage from "./pages/MessagingPage";
 import NotFound from "./pages/NotFound";
 import RoleSelectionPage from "./pages/auth/RoleSelectionPage";
 import ClientSignupPage from "./pages/auth/ClientSignupPage";
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/lawyer/:id" element={<Layout><LawyerDetailPage /></Layout>} />
           <Route path="/lawyer-profile" element={<Layout><LawyerProfilePage /></Layout>} />
           <Route path="/news" element={<Layout><NewsPage /></Layout>} />
+          <Route path="/messages" element={<Layout><MessagingPage /></Layout>} />
           <Route path="/dictionary" element={<Layout><DictionaryPage /></Layout>} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -43,6 +43,7 @@ const publicNavigation = [
 
 const clientNavigation = [
   { name: 'AI Assistant', href: '/chat', icon: MessageSquare },
+  { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Find Lawyers', href: '/lawyers', icon: Users },
   { name: 'Legal News', href: '/news', icon: Newspaper },
@@ -51,6 +52,7 @@ const clientNavigation = [
 
 const lawyerNavigation = [
   { name: 'AI Assistant', href: '/chat', icon: MessageSquare },
+  { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Find Lawyers', href: '/lawyers', icon: Users },
   { name: 'Legal News', href: '/news', icon: Newspaper },
