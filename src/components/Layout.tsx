@@ -27,7 +27,8 @@ import {
   Crown,
   User,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  Gavel
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -46,6 +47,7 @@ const clientNavigation = [
   { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Find Lawyers', href: '/lawyers', icon: Users },
+  { name: 'Case Law', href: '/case-law', icon: Gavel },
   { name: 'Legal News', href: '/news', icon: Newspaper },
   { name: 'Dictionary', href: '/dictionary', icon: BookOpen },
 ];
@@ -55,6 +57,7 @@ const lawyerNavigation = [
   { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Find Lawyers', href: '/lawyers', icon: Users },
+  { name: 'Case Law', href: '/case-law', icon: Gavel },
   { name: 'Legal News', href: '/news', icon: Newspaper },
   { name: 'Dictionary', href: '/dictionary', icon: BookOpen },
 ];

@@ -17,6 +17,7 @@ import LawyerProfilePage from "./pages/LawyerProfilePage";
 import NewsPage from "./pages/NewsPage";
 import DictionaryPage from "./pages/DictionaryPage";
 import MessagingPage from "./pages/MessagingPage";
+import CaseLawPage from "./pages/CaseLawPage";
 import NotFound from "./pages/NotFound";
 import RoleSelectionPage from "./pages/auth/RoleSelectionPage";
 import ClientSignupPage from "./pages/auth/ClientSignupPage";
@@ -57,6 +58,7 @@ const App = () => (
           <Route path="/news" element={<Layout><NewsPage /></Layout>} />
           <Route path="/messages" element={<Layout><MessagingPage /></Layout>} />
           <Route path="/dictionary" element={<Layout><DictionaryPage /></Layout>} />
+          <Route path="/case-law" element={<Layout><CaseLawPage /></Layout>} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
