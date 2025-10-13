@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import logo from '@/assets/Wukala-GPT-Logo.jpg';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -101,17 +102,11 @@ export default function Layout({ children }: LayoutProps) {
         <div className="container flex h-14 lg:h-16 items-center justify-between px-4">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 lg:space-x-3">
-            <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-xl bg-gradient-primary">
-              <Scale className="h-4 w-4 lg:h-6 lg:w-6 text-primary-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-lg lg:text-xl font-bold text-gradient-primary font-serif">
-                Wukala-GPT
-              </span>
-              <span className="text-[10px] lg:text-xs text-muted-foreground">
-                Legal AI Assistant
-              </span>
-            </div>
+            <img 
+              src={logo} 
+              alt="Wukala-GPT Logo" 
+              className="h-10 w-auto lg:h-12"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -310,9 +305,11 @@ export default function Layout({ children }: LayoutProps) {
           <div className="container py-6 lg:py-8 px-4">
             <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
               <div className="flex items-center space-x-3">
-                <div className="flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center rounded-lg bg-gradient-primary">
-                  <Scale className="h-3 w-3 lg:h-4 lg:w-4 text-primary-foreground" />
-                </div>
+                <img 
+                  src={logo} 
+                  alt="Wukala-GPT Logo" 
+                  className="h-6 w-auto lg:h-8"
+                />
                 <span className="text-xs lg:text-sm text-muted-foreground text-center lg:text-left">
                   © 2024 Wukala-GPT. Transforming legal services in Pakistan.
                 </span>

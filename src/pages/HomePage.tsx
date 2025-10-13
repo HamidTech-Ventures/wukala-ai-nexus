@@ -1,7 +1,8 @@
 
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Scale, Shield, Users, FileText, Clock, Award } from 'lucide-react';
+import { Shield, Users, Clock } from 'lucide-react';
+import logo from '@/assets/Wukala-GPT-Logo.jpg';
 
 const HomePage = () => {
   return (
@@ -10,14 +11,13 @@ const HomePage = () => {
       <section className="relative bg-gradient-to-br from-background via-muted/10 to-background py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="flex justify-center mb-4 sm:mb-6">
-              <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-primary">
-                <Scale className="h-6 w-6 sm:h-8 sm:w-8 text-primary-foreground" />
-              </div>
+            <div className="flex justify-center mb-6 sm:mb-8">
+              <img 
+                src={logo} 
+                alt="Wukala-GPT Logo" 
+                className="h-24 w-auto sm:h-32 lg:h-40"
+              />
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 font-serif">
-              Wukala-GPT
-            </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
               Pakistan's Premier AI-Powered Legal Assistant Platform
             </p>

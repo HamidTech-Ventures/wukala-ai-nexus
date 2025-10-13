@@ -5,12 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Mail, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 
 export default function OTPVerificationPage() {
   const [otp, setOtp] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
-  const [isResending, setIsResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -63,19 +62,6 @@ export default function OTPVerificationPage() {
     }, 1500);
   };
 
-  const handleResendOTP = async () => {
-    setIsResending(true);
-    
-    // Simulate resending OTP (replace with actual API call)
-    setTimeout(() => {
-      toast({
-        title: "OTP Resent",
-        description: "A new OTP code has been sent to your email",
-      });
-      setIsResending(false);
-      setOtp(''); // Clear current OTP
-    }, 1000);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
@@ -141,37 +127,8 @@ export default function OTPVerificationPage() {
               className="w-full h-11"
               size="lg"
             >
-              {isVerifying ? (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                'Verify Email'
-              )}
+              {isVerifying ? 'Verifying...' : 'Verify Email'}
             </Button>
-
-            {/* Resend Section */}
-            <div className="text-center space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Didn't receive the code?
-              </p>
-              <Button
-                variant="outline"
-                onClick={handleResendOTP}
-                disabled={isResending}
-                className="w-full"
-              >
-                {isResending ? (
-                  <>
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  'Resend Code'
-                )}
-              </Button>
-            </div>
 
             {/* Help Text */}
             <div className="text-center">
