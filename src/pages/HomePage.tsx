@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Shield, Users, Clock } from 'lucide-react';
-import logo from '@/assets/Wukala-GPT-Logo.jpg';
+import logo from '@/assets/Wukala-GPT-Logo-Green.jpg';
 
 const HomePage = () => {
   return (

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import logo from '@/assets/Wukala-GPT-Logo.jpg';
+import logo from '@/assets/Wukala-GPT-Logo-Green.jpg';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -170,11 +170,9 @@ export default function Layout({ children }: LayoutProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-9 px-3 flex items-center space-x-2"
+                      className="h-9 w-9 p-0"
                     >
-                      <User className="h-4 w-4" />
-                      <span className="hidden xl:block">{user?.name}</span>
-                      <ChevronDown className="h-3 w-3" />
+                      <User className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
