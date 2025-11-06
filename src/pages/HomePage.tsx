@@ -10,26 +10,26 @@ const HomePage = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image with Blur */}
+        {/* Background Image - Clear without Blur */}
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroBg})` }}
         >
-          <div className="absolute inset-0 backdrop-blur-sm bg-background/40" />
+          <div className="absolute inset-0 bg-background/30" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
         </div>
 
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full" style={{ animationDelay: '2s' }} />
         </div>
 
         {/* Main Content Container */}
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto">
             {/* Glass Card Container */}
-            <div className="glass rounded-3xl p-8 sm:p-12 lg:p-16 border border-white/20 shadow-2xl backdrop-blur-xl">
+            <div className="glass rounded-3xl p-8 sm:p-12 lg:p-16 border border-white/20 shadow-2xl">
               <div className="text-center">
                 {/* Logo with Glow Effect */}
                 <div className="flex justify-center mb-8">
