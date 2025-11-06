@@ -15,8 +15,8 @@ const HomePage = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroBg})` }}
         >
-          <div className="absolute inset-0 bg-background/30" />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
+          <div className="absolute inset-0 bg-background/10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
         </div>
 
         {/* Animated Background Elements */}
