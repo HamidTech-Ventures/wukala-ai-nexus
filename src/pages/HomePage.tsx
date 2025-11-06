@@ -1,47 +1,104 @@
 
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, Clock } from 'lucide-react';
+import { Shield, Users, Clock, Sparkles, Scale } from 'lucide-react';
 import logo from '@/assets/Wukala-GPT-Logo-Green.jpg';
+import heroBg from '@/assets/hero-courtroom-bg.jpg';
 
 const HomePage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-background via-muted/10 to-background py-12 sm:py-16 lg:py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="flex justify-center mb-6 sm:mb-8">
-              <img 
-                src={logo} 
-                alt="Wukala-GPT Logo" 
-                className="h-24 w-auto sm:h-32 lg:h-40"
-              />
-            </div>
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
-              Pakistan's Premier AI-Powered Legal Assistant Platform
-            </p>
-            <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-12 max-w-2xl mx-auto">
-              Connecting clients with verified lawyers and providing intelligent legal guidance 
-              through cutting-edge artificial intelligence technology.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button 
-                asChild 
-                size="lg" 
-                className="bg-gradient-primary hover:shadow-lg transition-all duration-300 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6"
-              >
-                <Link to="/auth/role">Get Started</Link>
-              </Button>
-              <Button 
-                asChild 
-                variant="outline" 
-                size="lg"
-                className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 border-2"
-              >
-                <Link to="/login">Login</Link>
-              </Button>
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image with Blur */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroBg})` }}
+        >
+          <div className="absolute inset-0 backdrop-blur-sm bg-background/40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
+        </div>
+
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        </div>
+
+        {/* Main Content Container */}
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            {/* Glass Card Container */}
+            <div className="glass rounded-3xl p-8 sm:p-12 lg:p-16 border border-white/20 shadow-2xl backdrop-blur-xl">
+              <div className="text-center">
+                {/* Logo with Glow Effect */}
+                <div className="flex justify-center mb-8">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-primary/30 blur-2xl rounded-full" />
+                    <img 
+                      src={logo} 
+                      alt="Wukala-GPT Logo" 
+                      className="h-28 w-auto sm:h-36 lg:h-44 relative z-10 drop-shadow-2xl"
+                    />
+                  </div>
+                </div>
+
+                {/* Futuristic Badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">AI-Powered Legal Intelligence</span>
+                </div>
+
+                {/* Main Heading */}
+                <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-foreground mb-6 leading-tight font-serif">
+                  Pakistan's Premier
+                  <span className="block text-gradient-primary mt-2">Legal AI Platform</span>
+                </h1>
+
+                {/* Description */}
+                <p className="text-base sm:text-lg lg:text-xl text-foreground/80 mb-8 max-w-3xl mx-auto leading-relaxed">
+                  Connecting clients with verified lawyers and providing intelligent legal guidance 
+                  through cutting-edge artificial intelligence technology.
+                </p>
+
+                {/* Feature Pills */}
+                <div className="flex flex-wrap gap-3 justify-center mb-10">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 border border-border/50 backdrop-blur-sm">
+                    <Scale className="w-4 h-4 text-primary" />
+                    <span className="text-sm text-foreground">Verified Lawyers</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 border border-border/50 backdrop-blur-sm">
+                    <Shield className="w-4 h-4 text-primary" />
+                    <span className="text-sm text-foreground">Secure Platform</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 border border-border/50 backdrop-blur-sm">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    <span className="text-sm text-foreground">24/7 AI Support</span>
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button 
+                    asChild 
+                    size="lg" 
+                    className="bg-gradient-primary hover:shadow-premium hover:scale-105 transition-all duration-300 text-base sm:text-lg px-8 py-6 font-semibold"
+                  >
+                    <Link to="/auth/role">
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Get Started
+                    </Link>
+                  </Button>
+                  <Button 
+                    asChild 
+                    variant="outline" 
+                    size="lg"
+                    className="text-base sm:text-lg px-8 py-6 border-2 border-primary/50 bg-background/50 backdrop-blur-sm hover:bg-primary/10 hover:scale-105 transition-all duration-300 font-semibold"
+                  >
+                    <Link to="/login">Login</Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
