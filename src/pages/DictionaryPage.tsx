@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,6 +98,7 @@ const categories = [
 const bookTypes = ["Constitution", "Code", "Act", "Rules", "Ordinance", "Case Law"];
 
 export default function DictionaryPage() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBook, setSelectedBook] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
@@ -170,10 +172,6 @@ export default function DictionaryPage() {
               onClick={() => setViewMode('list')}
             >
               <List className="h-4 w-4" />
-            </Button>
-            <Button className="bg-gradient-gold">
-              <Star className="h-4 w-4 mr-2" />
-              Premium Library
             </Button>
           </div>
         </div>
@@ -452,7 +450,10 @@ export default function DictionaryPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Button className="w-full bg-gradient-gold">
+                      <Button 
+                        className="w-full bg-gradient-gold"
+                        onClick={() => navigate(`/book/${selectedBook.id}`)}
+                      >
                         <Eye className="h-4 w-4 mr-2" />
                         Read Online
                       </Button>

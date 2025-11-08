@@ -70,6 +70,7 @@ export default function NewsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [chatMessage, setChatMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [chatHistory, setChatHistory] = useState([
     {
       id: 1,
@@ -133,16 +134,14 @@ export default function NewsPage() {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-primary mb-2">Legal News Hub</h1>
             <p className="text-sm sm:text-base text-muted-foreground">Stay updated with the latest legal developments and court decisions</p>
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
-            <Button className="bg-gradient-gold">
-              <Star className="h-4 w-4 mr-2" />
-              Premium News
-            </Button>
-          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            {showAdvancedFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
@@ -173,6 +172,26 @@ export default function NewsPage() {
                 className="pl-10 h-12 bg-glass border-white/20"
               />
             </div>
+
+            {/* Advanced Filters */}
+            {showAdvancedFilters && (
+              <Card className="bg-glass border-white/20 p-4">
+                <h3 className="font-semibold mb-4">Advanced Filters</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {categories.map(category => (
+                    <Button
+                      key={category}
+                      variant={selectedInterests.includes(category) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => toggleInterest(category)}
+                      className="justify-start"
+                    >
+                      {category}
+                    </Button>
+                  ))}
+                </div>
+              </Card>
+            )}
 
             {/* Active Interests */}
             <div className="flex flex-wrap gap-2">

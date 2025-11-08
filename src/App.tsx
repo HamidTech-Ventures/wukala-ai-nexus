@@ -16,6 +16,7 @@ import LawyerDetailPage from "./pages/LawyerDetailPage";
 import LawyerProfilePage from "./pages/LawyerProfilePage";
 import NewsPage from "./pages/NewsPage";
 import DictionaryPage from "./pages/DictionaryPage";
+import BookReaderPage from "./pages/BookReaderPage";
 import MessagingPage from "./pages/MessagingPage";
 import CaseLawPage from "./pages/CaseLawPage";
 import NotFound from "./pages/NotFound";
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/news" element={<Layout><NewsPage /></Layout>} />
           <Route path="/messages" element={<Layout><MessagingPage /></Layout>} />
           <Route path="/dictionary" element={<Layout><DictionaryPage /></Layout>} />
+          <Route path="/book/:id" element={<Layout><BookReaderPage /></Layout>} />
           <Route path="/case-law" element={<Layout><CaseLawPage /></Layout>} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
