@@ -274,20 +274,14 @@ export default function LawyerDetailPage() {
                     <div className="text-xl sm:text-2xl font-bold text-primary mb-3">
                       Rs. {lawyer.hourlyRate.toLocaleString()}/hr
                     </div>
-                    <div className="flex flex-col space-y-2">
-                      <Button
-                        onClick={() => navigate('/messages')}
-                        disabled={lawyer.availability === 'offline'}
-                        className="bg-gradient-primary hover:shadow-lg transition-all duration-200"
-                      >
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        Message Now
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Schedule Consultation
-                      </Button>
-                    </div>
+                    <Button
+                      onClick={() => navigate('/messages')}
+                      disabled={lawyer.availability === 'offline'}
+                      className="bg-gradient-primary hover:shadow-lg transition-all duration-200"
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Message Now
+                    </Button>
                   </div>
                 </div>
 
