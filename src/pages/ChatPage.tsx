@@ -5,6 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import OnboardingTour from '@/components/OnboardingTour';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Send, 
   Mic, 
@@ -15,7 +16,13 @@ import {
   Bot,
   User,
   FileText,
-  Trash2
+  Trash2,
+  ThumbsUp,
+  ThumbsDown,
+  Copy,
+  Volume2,
+  PanelLeftClose,
+  PanelLeft
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +44,7 @@ interface ChatSession {
 
 export default function ChatPage() {
   const { showOnboarding, completeOnboarding } = useOnboarding();
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -52,6 +60,7 @@ export default function ChatPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [recordingTime, setRecordingTime] = useState(0);
   const [recordingInterval, setRecordingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [chatSessions] = useState<ChatSession[]>([
     {
       id: '1',
@@ -97,21 +106,106 @@ export default function ChatPage() {
       timestamp: new Date(),
     };
 
+    const userInput = inputValue.toLowerCase();
     setMessages(prev => [...prev, newMessage]);
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
+    // Simulate AI response with diagram support
     setTimeout(() => {
+      let aiContent = 'Thank you for your question. Based on Pakistani law, I can provide you with the following guidance...';
+      
+      // Check if user asked for flowchart or diagram
+      if (userInput.includes('flowchart') || userInput.includes('diagram')) {
+        aiContent = `Here's a flowchart showing the legal process:
+
+\`\`\`mermaid
+graph TD
+    A[File Complaint] --> B{Valid Documentation?}
+    B -->|Yes| C[Case Registered]
+    B -->|No| D[Request Additional Documents]
+    D --> A
+    C --> E[Court Hearing Scheduled]
+    E --> F[Evidence Presentation]
+    F --> G[Judge Decision]
+    G --> H{Verdict}
+    H -->|Favorable| I[Case Won]
+    H -->|Unfavorable| J[Appeal Option]
+\`\`\`
+
+This diagram illustrates the typical legal proceeding workflow in Pakistani courts.`;
+      }
+      
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'Thank you for your question. Based on Pakistani law, I can provide you with the following guidance...',
+        content: aiContent,
         sender: 'ai',
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
     }, 2000);
+  };
+
+  const handleCopyMessage = (content: string) => {
+    navigator.clipboard.writeText(content);
+    toast({
+      title: "Copied to clipboard",
+      description: "Message has been copied successfully.",
+    });
+  };
+
+  const handleGoodResponse = (messageId: string) => {
+    toast({
+      title: "Feedback recorded",
+      description: "Thank you for your positive feedback!",
+    });
+  };
+
+  const handleBadResponse = (messageId: string) => {
+    toast({
+      title: "Feedback recorded",
+      description: "We'll work on improving our responses.",
+    });
+  };
+
+  const handleVoicePlayback = (content: string) => {
+    toast({
+      title: "Voice playback",
+      description: "Text-to-speech feature coming soon!",
+    });
+  };
+
+  const renderMessageContent = (content: string) => {
+    // Check if content contains mermaid diagram
+    const mermaidRegex = /```mermaid\n([\s\S]*?)\n```/g;
+    const parts = content.split(mermaidRegex);
+    
+    if (parts.length === 1) {
+      return <p className="text-xs lg:text-sm leading-relaxed break-words whitespace-pre-wrap">{content}</p>;
+    }
+
+    return (
+      <div className="space-y-4">
+        {parts.map((part, index) => {
+          if (index % 2 === 0) {
+            // Regular text
+            return part.trim() ? (
+              <p key={index} className="text-xs lg:text-sm leading-relaxed break-words whitespace-pre-wrap">
+                {part.trim()}
+              </p>
+            ) : null;
+          } else {
+            // Mermaid diagram
+            return (
+              <div key={index} className="my-4 p-4 bg-background/50 rounded-lg border border-border overflow-x-auto">
+                <pre className="text-xs mermaid">{part.trim()}</pre>
+              </div>
+            );
+          }
+        })}
+      </div>
+    );
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -167,12 +261,36 @@ export default function ChatPage() {
     return date.toLocaleDateString();
   };
 
+  useEffect(() => {
+    // Initialize mermaid for diagram rendering
+    if (typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+      script.onload = () => {
+        (window as any).mermaid?.initialize({ startOnLoad: true, theme: 'neutral' });
+      };
+      document.head.appendChild(script);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Re-render mermaid diagrams when messages update
+    setTimeout(() => {
+      if ((window as any).mermaid) {
+        (window as any).mermaid.run();
+      }
+    }, 100);
+  }, [messages]);
+
   return (
     <>
       {showOnboarding && <OnboardingTour onComplete={completeOnboarding} />}
       <div className="flex h-[calc(100vh-4rem)] bg-background">
       {/* Sidebar - Chat History */}
-      <div className="hidden lg:flex lg:w-80 border-r border-border bg-muted/20 flex-col">
+      <div className={cn(
+        "border-r border-border bg-muted/20 flex-col transition-all duration-300",
+        isSidebarOpen ? "flex w-80" : "hidden"
+      )}>
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Chat History</h2>
@@ -234,6 +352,18 @@ export default function ChatPage() {
         <div className="p-3 lg:p-4 border-b border-border bg-card/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="h-8 w-8 p-0"
+              >
+                {isSidebarOpen ? (
+                  <PanelLeftClose className="h-4 w-4" />
+                ) : (
+                  <PanelLeft className="h-4 w-4" />
+                )}
+              </Button>
               <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-full bg-gradient-primary">
                 <Bot className="h-4 w-4 lg:h-5 lg:w-5 text-primary-foreground" />
               </div>
@@ -277,7 +407,7 @@ export default function ChatPage() {
                 </div>
                 
                 <div className={cn(
-                  'flex-1 max-w-[85%] lg:max-w-lg',
+                  'flex-1 max-w-[85%] lg:max-w-2xl',
                   message.sender === 'user' ? 'flex justify-end' : ''
                 )}>
                   <div className={cn(
@@ -286,7 +416,7 @@ export default function ChatPage() {
                       ? 'chat-bubble-user' 
                       : 'chat-bubble-ai'
                   )}>
-                    <p className="text-xs lg:text-sm leading-relaxed break-words">{message.content}</p>
+                    {renderMessageContent(message.content)}
                     <p className={cn(
                       'text-[10px] lg:text-xs mt-1 lg:mt-2 opacity-70',
                       message.sender === 'user' ? 'text-primary-foreground' : 'text-muted-foreground'
@@ -294,6 +424,48 @@ export default function ChatPage() {
                       {formatTime(message.timestamp)}
                     </p>
                   </div>
+                  
+                  {/* Action buttons for AI messages */}
+                  {message.sender === 'ai' && (
+                    <div className="flex items-center gap-1 mt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleGoodResponse(message.id)}
+                        className="h-7 w-7 p-0 hover:text-green-600"
+                        title="Good response"
+                      >
+                        <ThumbsUp className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleBadResponse(message.id)}
+                        className="h-7 w-7 p-0 hover:text-red-600"
+                        title="Bad response"
+                      >
+                        <ThumbsDown className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCopyMessage(message.content)}
+                        className="h-7 w-7 p-0"
+                        title="Copy response"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleVoicePlayback(message.content)}
+                        className="h-7 w-7 p-0"
+                        title="Listen to response"
+                      >
+                        <Volume2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
