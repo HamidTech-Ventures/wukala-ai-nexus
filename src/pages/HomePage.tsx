@@ -1,10 +1,49 @@
 
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Shield, Users, Clock, Sparkles, Scale, ArrowRight, Award, Globe, Zap, ChevronRight } from 'lucide-react';
 import logo from '@/assets/Wukala-GPT-Logo-Green.jpg';
 
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
+};
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.6, ease: "easeOut" as const } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 }
+  }
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" as const } }
+};
+
 const HomePage = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Stop video when component unmounts (navigating away)
+  useEffect(() => {
+    const video = videoRef.current;
+    
+    return () => {
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Hero Section with Video Background */}
@@ -12,6 +51,7 @@ const HomePage = () => {
         {/* Video Background */}
         <div className="absolute inset-0">
           <video
+            ref={videoRef}
             autoPlay
             loop
             playsInline
@@ -28,30 +68,47 @@ const HomePage = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div className="text-left max-w-2xl">
+            <motion.div 
+              className="text-left max-w-2xl"
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+            >
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-in">
+              <motion.div 
+                variants={fadeIn}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
+              >
                 <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
                 <span className="text-sm font-medium text-primary">Pakistan's #1 Legal AI Platform</span>
-              </div>
+              </motion.div>
 
               {/* Main Heading */}
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] font-serif animate-slide-up">
+              <motion.h1 
+                variants={fadeInUp}
+                className="text-4xl sm:text-5xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] font-serif"
+              >
                 Redefining
                 <span className="block text-gradient-gold mt-2">Legal Excellence</span>
                 <span className="block text-2xl sm:text-3xl lg:text-4xl font-sans font-light text-muted-foreground mt-4">
                   with Artificial Intelligence
                 </span>
-              </h1>
+              </motion.h1>
 
               {/* Description */}
-              <p className="text-lg lg:text-xl text-foreground/80 mb-10 leading-relaxed max-w-xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <motion.p 
+                variants={fadeInUp}
+                className="text-lg lg:text-xl text-foreground/80 mb-10 leading-relaxed max-w-xl"
+              >
                 Experience the future of law. Connect with verified attorneys, access intelligent legal guidance, 
                 and transform how Pakistan does justice.
-              </p>
+              </motion.p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <motion.div 
+                variants={fadeInUp}
+                className="flex flex-col sm:flex-row gap-4"
+              >
                 <Button 
                   asChild 
                   size="lg" 
@@ -73,10 +130,13 @@ const HomePage = () => {
                     <ChevronRight className="w-5 h-5 ml-1" />
                   </Link>
                 </Button>
-              </div>
+              </motion.div>
 
               {/* Stats Row */}
-              <div className="flex flex-wrap gap-8 mt-12 pt-8 border-t border-border/50 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+              <motion.div 
+                variants={fadeInUp}
+                className="flex flex-wrap gap-8 mt-12 pt-8 border-t border-border/50"
+              >
                 <div>
                   <div className="text-3xl lg:text-4xl font-bold text-foreground">5000+</div>
                   <div className="text-sm text-muted-foreground">Verified Lawyers</div>
@@ -89,11 +149,16 @@ const HomePage = () => {
                   <div className="text-3xl lg:text-4xl font-bold text-foreground">98%</div>
                   <div className="text-sm text-muted-foreground">Client Satisfaction</div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Right Content - Logo Card */}
-            <div className="hidden lg:flex justify-center items-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <motion.div 
+              initial="hidden"
+              animate="visible"
+              variants={scaleIn}
+              className="hidden lg:flex justify-center items-center"
+            >
               <div className="relative">
                 {/* Glow Effect */}
                 <div className="absolute -inset-8 bg-gradient-to-r from-primary/20 via-gold/20 to-primary/20 blur-3xl rounded-full" />
@@ -111,65 +176,106 @@ const HomePage = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.5 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce"
+        >
           <div className="w-6 h-10 rounded-full border-2 border-foreground/30 flex items-start justify-center p-2">
             <div className="w-1 h-2 bg-foreground/50 rounded-full animate-pulse" />
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Trust Badges Section */}
-      <section className="py-8 bg-muted/30 border-y border-border/50">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={fadeIn}
+        className="py-8 bg-muted/30 border-y border-border/50"
+      >
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 text-muted-foreground">
-            <div className="flex items-center gap-2">
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 text-muted-foreground"
+          >
+            <motion.div variants={fadeInUp} className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
               <span className="text-sm font-medium">Bar Council Verified</span>
-            </div>
-            <div className="flex items-center gap-2">
+            </motion.div>
+            <motion.div variants={fadeInUp} className="flex items-center gap-2">
               <Award className="w-5 h-5 text-gold" />
               <span className="text-sm font-medium">Award Winning Platform</span>
-            </div>
-            <div className="flex items-center gap-2">
+            </motion.div>
+            <motion.div variants={fadeInUp} className="flex items-center gap-2">
               <Globe className="w-5 h-5 text-primary" />
               <span className="text-sm font-medium">Nationwide Coverage</span>
-            </div>
-            <div className="flex items-center gap-2">
+            </motion.div>
+            <motion.div variants={fadeInUp} className="flex items-center gap-2">
               <Zap className="w-5 h-5 text-gold" />
               <span className="text-sm font-medium">AI-Powered</span>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Features Section */}
       <section className="py-20 lg:py-32 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             {/* Section Header */}
-            <div className="text-center mb-16 lg:mb-20">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20 mb-6">
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={staggerContainer}
+              className="text-center mb-16 lg:mb-20"
+            >
+              <motion.div 
+                variants={fadeInUp}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20 mb-6"
+              >
                 <Sparkles className="w-4 h-4 text-gold" />
                 <span className="text-sm font-medium text-gold">Premium Features</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 font-serif">
+              </motion.div>
+              <motion.h2 
+                variants={fadeInUp}
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 font-serif"
+              >
                 Why Industry Leaders
                 <span className="block text-gradient-primary mt-2">Choose Wukala-GPT</span>
-              </h2>
-              <p className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
+              </motion.h2>
+              <motion.p 
+                variants={fadeInUp}
+                className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto"
+              >
                 Built for the future of Pakistani legal practice, combining cutting-edge AI 
                 with the highest standards of professional excellence.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
             {/* Feature Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="group relative bg-card p-8 lg:p-10 rounded-3xl border border-border hover:border-primary/50 transition-all duration-500 hover:shadow-premium">
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={staggerContainer}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            >
+              <motion.div 
+                variants={fadeInUp}
+                className="group relative bg-card p-8 lg:p-10 rounded-3xl border border-border hover:border-primary/50 transition-all duration-500 hover:shadow-premium"
+              >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative">
                   <div className="flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -181,9 +287,12 @@ const HomePage = () => {
                     information is protected with enterprise-level encryption.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="group relative bg-card p-8 lg:p-10 rounded-3xl border border-border hover:border-gold/50 transition-all duration-500 hover:shadow-gold">
+              <motion.div 
+                variants={fadeInUp}
+                className="group relative bg-card p-8 lg:p-10 rounded-3xl border border-border hover:border-gold/50 transition-all duration-500 hover:shadow-gold"
+              >
                 <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative">
                   <div className="flex items-center justify-center w-16 h-16 bg-gradient-gold rounded-2xl mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -195,9 +304,12 @@ const HomePage = () => {
                     every specialization, from corporate law to human rights.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="group relative bg-card p-8 lg:p-10 rounded-3xl border border-border hover:border-primary/50 transition-all duration-500 hover:shadow-premium">
+              <motion.div 
+                variants={fadeInUp}
+                className="group relative bg-card p-8 lg:p-10 rounded-3xl border border-border hover:border-primary/50 transition-all duration-500 hover:shadow-premium"
+              >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative">
                   <div className="flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -209,14 +321,20 @@ const HomePage = () => {
                     for preliminary guidance and document analysis.
                   </p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Premium CTA Section */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={fadeIn}
+        className="relative py-24 lg:py-32 overflow-hidden"
+      >
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary-muted" />
         <div className="absolute inset-0 opacity-10">
@@ -226,23 +344,41 @@ const HomePage = () => {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 mb-8">
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            <motion.div 
+              variants={fadeInUp}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 mb-8"
+            >
               <Scale className="w-4 h-4 text-primary-foreground" />
               <span className="text-sm font-medium text-primary-foreground">Join the Revolution</span>
-            </div>
+            </motion.div>
             
-            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-primary-foreground mb-8 font-serif leading-tight">
+            <motion.h2 
+              variants={fadeInUp}
+              className="text-3xl sm:text-4xl lg:text-6xl font-bold text-primary-foreground mb-8 font-serif leading-tight"
+            >
               Ready to Experience
               <span className="block text-gradient-gold mt-2">The Future of Law?</span>
-            </h2>
+            </motion.h2>
             
-            <p className="text-lg lg:text-xl text-primary-foreground/80 mb-12 max-w-2xl mx-auto">
+            <motion.p 
+              variants={fadeInUp}
+              className="text-lg lg:text-xl text-primary-foreground/80 mb-12 max-w-2xl mx-auto"
+            >
               Join thousands of forward-thinking legal professionals and clients 
               who are already transforming their practice with Wukala-GPT.
-            </p>
+            </motion.p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <motion.div 
+              variants={fadeInUp}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
               <Button 
                 asChild 
                 size="lg" 
@@ -261,34 +397,40 @@ const HomePage = () => {
               >
                 <Link to="/about">Learn More</Link>
               </Button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Footer Stats */}
-      <section className="py-16 bg-muted/30 border-t border-border/50">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+        variants={staggerContainer}
+        className="py-16 bg-muted/30 border-t border-border/50"
+      >
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
+            <motion.div variants={fadeInUp}>
               <div className="text-4xl lg:text-5xl font-bold text-gradient-primary mb-2">5000+</div>
               <div className="text-muted-foreground">Verified Attorneys</div>
-            </div>
-            <div>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
               <div className="text-4xl lg:text-5xl font-bold text-gradient-gold mb-2">50K+</div>
               <div className="text-muted-foreground">Cases Handled</div>
-            </div>
-            <div>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
               <div className="text-4xl lg:text-5xl font-bold text-gradient-primary mb-2">100+</div>
               <div className="text-muted-foreground">Cities Covered</div>
-            </div>
-            <div>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
               <div className="text-4xl lg:text-5xl font-bold text-gradient-gold mb-2">24/7</div>
               <div className="text-muted-foreground">AI Support</div>
-            </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 };
