@@ -1,10 +1,9 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, Clock, Sparkles, Scale, ArrowRight, Award, Globe, Zap, ChevronRight } from 'lucide-react';
-import logo from '@/assets/Wukala-GPT-Logo-Green.jpg';
+import { Shield, Users, Clock, Sparkles, Scale, ArrowRight, Award, Globe, Zap, ChevronRight, ChevronLeft, Quote, Star } from 'lucide-react';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -24,13 +23,48 @@ const staggerContainer = {
   }
 };
 
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" as const } }
-};
+const testimonials = [
+  {
+    id: 1,
+    name: "Ahmed Raza Malik",
+    role: "Corporate Client",
+    company: "Tech Innovations Pvt Ltd",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    quote: "Wukala-GPT transformed how we handle legal matters. Finding the right corporate lawyer took minutes instead of weeks. The AI assistant helped us understand complex contracts before our consultation.",
+    rating: 5
+  },
+  {
+    id: 2,
+    name: "Advocate Fatima Hassan",
+    role: "Senior Lawyer",
+    company: "Hassan & Associates",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+    quote: "As a lawyer, this platform has revolutionized my practice. Client management is seamless, and the verification process gives clients confidence. My caseload has increased by 40% since joining.",
+    rating: 5
+  },
+  {
+    id: 3,
+    name: "Imran Qureshi",
+    role: "Business Owner",
+    company: "Qureshi Exports",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    quote: "The 24/7 AI support is incredible. I got preliminary legal guidance at midnight before an important deal. The platform connected me with an international trade expert within hours.",
+    rating: 5
+  },
+  {
+    id: 4,
+    name: "Advocate Sana Mirza",
+    role: "Family Law Specialist",
+    company: "Mirza Legal Consultants",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    quote: "Wukala-GPT understands the sensitivity of family law cases. The platform's secure messaging and document handling give my clients the privacy they deserve. Truly a game-changer.",
+    rating: 5
+  }
+];
 
 const HomePage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   // Stop video when component unmounts (navigating away)
   useEffect(() => {
@@ -43,6 +77,22 @@ const HomePage = () => {
       }
     };
   }, []);
+
+  // Auto-rotate testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const nextTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
@@ -66,10 +116,9 @@ const HomePage = () => {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
+          <div className="max-w-3xl">
             <motion.div 
-              className="text-left max-w-2xl"
+              className="text-left"
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
@@ -150,32 +199,6 @@ const HomePage = () => {
                   <div className="text-sm text-muted-foreground">Client Satisfaction</div>
                 </div>
               </motion.div>
-            </motion.div>
-
-            {/* Right Content - Logo Card */}
-            <motion.div 
-              initial="hidden"
-              animate="visible"
-              variants={scaleIn}
-              className="hidden lg:flex justify-center items-center"
-            >
-              <div className="relative">
-                {/* Glow Effect */}
-                <div className="absolute -inset-8 bg-gradient-to-r from-primary/20 via-gold/20 to-primary/20 blur-3xl rounded-full" />
-                
-                {/* Logo Container */}
-                <div className="relative glass rounded-3xl p-12 border border-border/30">
-                  <img 
-                    src={logo} 
-                    alt="Wukala-GPT Logo" 
-                    className="h-48 w-auto drop-shadow-2xl"
-                  />
-                  <div className="mt-6 text-center">
-                    <div className="text-2xl font-serif font-bold text-foreground">Wukala-GPT</div>
-                    <div className="text-sm text-muted-foreground mt-1">Legal Intelligence Redefined</div>
-                  </div>
-                </div>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -323,6 +346,124 @@ const HomePage = () => {
                 </div>
               </motion.div>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 lg:py-32 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Header */}
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={staggerContainer}
+              className="text-center mb-16"
+            >
+              <motion.div 
+                variants={fadeInUp}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6"
+              >
+                <Quote className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-primary">Client Testimonials</span>
+              </motion.div>
+              <motion.h2 
+                variants={fadeInUp}
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 font-serif"
+              >
+                Trusted by Thousands
+                <span className="block text-gradient-gold mt-2">Across Pakistan</span>
+              </motion.h2>
+            </motion.div>
+
+            {/* Testimonial Carousel */}
+            <div className="relative">
+              <div className="overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentTestimonial}
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="bg-card rounded-3xl p-8 lg:p-12 border border-border shadow-premium"
+                  >
+                    <div className="flex flex-col lg:flex-row gap-8 items-center">
+                      {/* Avatar */}
+                      <div className="flex-shrink-0">
+                        <div className="relative">
+                          <div className="absolute -inset-2 bg-gradient-to-r from-primary via-gold to-primary rounded-full blur-lg opacity-30" />
+                          <img 
+                            src={testimonials[currentTestimonial].image} 
+                            alt={testimonials[currentTestimonial].name}
+                            className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-full object-cover border-4 border-background shadow-lg"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 text-center lg:text-left">
+                        {/* Stars */}
+                        <div className="flex justify-center lg:justify-start gap-1 mb-4">
+                          {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
+                            <Star key={i} className="w-5 h-5 fill-gold text-gold" />
+                          ))}
+                        </div>
+
+                        {/* Quote */}
+                        <blockquote className="text-lg lg:text-xl text-foreground/90 mb-6 leading-relaxed italic">
+                          "{testimonials[currentTestimonial].quote}"
+                        </blockquote>
+
+                        {/* Author */}
+                        <div>
+                          <div className="text-xl font-semibold text-foreground font-serif">
+                            {testimonials[currentTestimonial].name}
+                          </div>
+                          <div className="text-muted-foreground">
+                            {testimonials[currentTestimonial].role} • {testimonials[currentTestimonial].company}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Navigation */}
+              <div className="flex items-center justify-center gap-4 mt-8">
+                <button
+                  onClick={prevTestimonial}
+                  className="p-3 rounded-full bg-card border border-border hover:bg-muted transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5 text-foreground" />
+                </button>
+
+                {/* Dots */}
+                <div className="flex gap-2">
+                  {testimonials.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentTestimonial(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentTestimonial 
+                          ? 'w-8 bg-primary' 
+                          : 'bg-border hover:bg-muted-foreground'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={nextTestimonial}
+                  className="p-3 rounded-full bg-card border border-border hover:bg-muted transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5 text-foreground" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
