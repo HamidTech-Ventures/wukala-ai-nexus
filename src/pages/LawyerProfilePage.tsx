@@ -228,12 +228,12 @@ const LawyerProfilePage = () => {
 
           {/* Right Column - Detailed Information */}
           <div className="lg:col-span-2">
-            <Tabs defaultValue="about" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="experience">Experience</TabsTrigger>
-                <TabsTrigger value="education">Education</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+            <Tabs defaultValue="about" className="space-y-4 sm:space-y-6">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-1">
+                <TabsTrigger value="about" className="text-xs sm:text-sm py-2">About</TabsTrigger>
+                <TabsTrigger value="experience" className="text-xs sm:text-sm py-2">Experience</TabsTrigger>
+                <TabsTrigger value="education" className="text-xs sm:text-sm py-2">Education</TabsTrigger>
+                <TabsTrigger value="settings" className="text-xs sm:text-sm py-2">Settings</TabsTrigger>
               </TabsList>
 
               <TabsContent value="about" className="space-y-6">

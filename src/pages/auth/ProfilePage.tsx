@@ -212,10 +212,10 @@ const ProfilePage = () => {
               </TabsContent>
 
               {userData.role === 'lawyer' && (
-                <TabsContent value="verification" className="p-8 space-y-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-4">Verification Information</h3>
+                <TabsContent value="verification" className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Verification Information</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="barCouncilNumber">Bar Council Number</Label>
                       <Input
@@ -276,8 +276,8 @@ const ProfilePage = () => {
               )}
 
               {userData.role === 'lawyer' && (
-                <TabsContent value="documents" className="p-8 space-y-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-4">Uploaded Documents</h3>
+                <TabsContent value="documents" className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Uploaded Documents</h3>
                   
                   <div className="space-y-6">
                     <div className="bg-muted/50 rounded-lg p-4">
@@ -317,9 +317,9 @@ const ProfilePage = () => {
             </Tabs>
 
             {/* Danger Zone */}
-            <div className="border-t border-border p-8">
-              <h3 className="text-lg font-semibold text-destructive mb-4">Danger Zone</h3>
-              <Button variant="destructive" className="w-full md:w-auto">
+            <div className="border-t border-border p-4 sm:p-6 lg:p-8">
+              <h3 className="text-base sm:text-lg font-semibold text-destructive mb-4">Danger Zone</h3>
+              <Button variant="destructive" className="w-full sm:w-auto" size="sm">
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete Account
               </Button>

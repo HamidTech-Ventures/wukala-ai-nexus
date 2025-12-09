@@ -289,7 +289,7 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
       {/* Sidebar - Chat History */}
       <div className={cn(
         "border-r border-border bg-muted/20 flex-col transition-all duration-300",
-        isSidebarOpen ? "flex w-80" : "hidden"
+        isSidebarOpen ? "flex w-full sm:w-72 lg:w-80 absolute sm:relative z-40 h-full sm:h-auto bg-background sm:bg-transparent" : "hidden"
       )}>
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
