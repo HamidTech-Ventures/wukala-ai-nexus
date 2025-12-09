@@ -177,8 +177,8 @@ export default function DictionaryPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-          {/* Sidebar Filters */}
-          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
+        {/* Sidebar Filters - Collapsible on mobile */}
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6 order-2 lg:order-1">
             {/* Search */}
             <Card className="bg-glass border-white/20">
               <CardHeader>
@@ -259,15 +259,16 @@ export default function DictionaryPage() {
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-4 sm:space-y-6">
+          <div className="lg:col-span-3 space-y-4 sm:space-y-6 order-1 lg:order-2">
             {/* Sort Controls */}
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Sort by:</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs sm:text-sm text-muted-foreground">Sort:</span>
                 <Button
                   variant={sortBy === 'title' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSortBy('title')}
+                  className="text-xs sm:text-sm h-8"
                 >
                   Title
                 </Button>
@@ -275,6 +276,7 @@ export default function DictionaryPage() {
                   variant={sortBy === 'year' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSortBy('year')}
+                  className="text-xs sm:text-sm h-8"
                 >
                   Year
                 </Button>
@@ -282,6 +284,7 @@ export default function DictionaryPage() {
                   variant={sortBy === 'rating' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSortBy('rating')}
+                  className="text-xs sm:text-sm h-8"
                 >
                   Rating
                 </Button>
@@ -289,11 +292,12 @@ export default function DictionaryPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  className="h-8 w-8 p-0"
                 >
                   {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
                 </Button>
               </div>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {sortedBooks.length} books found
               </span>
             </div>
