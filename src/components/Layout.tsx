@@ -221,8 +221,8 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
+        {/* Mobile Navigation - Only show when not authenticated (authenticated users use bottom nav) */}
+        {isMobileMenuOpen && !isAuthenticated && (
           <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur">
             <nav className="container py-4 px-4">
               <div className="flex flex-col space-y-2">
@@ -245,49 +245,54 @@ export default function Layout({ children }: LayoutProps) {
                     </Link>
                   );
                 })}
-                {!isAuthenticated ? (
-                  <div className="mt-4 space-y-2">
-                    <Button asChild variant="outline" className="w-full">
-                      <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
-                    </Button>
-                    <Button asChild className="w-full bg-gradient-primary">
-                      <Link to="/auth/role" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="mt-4 space-y-2">
-                    <div className="px-3 py-2 border-b border-border">
-                      <p className="text-sm font-medium">{user?.name}</p>
-                      <p className="text-xs text-muted-foreground">{user?.email}</p>
-                    </div>
-                    {user?.role === 'lawyer' && (
-                      <Button
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <Link to="/lawyer-profile">
-                          <User className="h-4 w-4 mr-2" />
-                          My Profile
-                        </Link>
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        handleLogout();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full justify-start"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logout
-                    </Button>
-                  </div>
+                <div className="mt-4 space-y-2">
+                  <Button asChild variant="outline" className="w-full">
+                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
+                  </Button>
+                  <Button asChild className="w-full bg-gradient-primary">
+                    <Link to="/auth/role" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
+                  </Button>
+                </div>
+              </div>
+            </nav>
+          </div>
+        )}
+        
+        {/* Mobile User Menu - Only for authenticated users */}
+        {isMobileMenuOpen && isAuthenticated && (
+          <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur">
+            <nav className="container py-4 px-4">
+              <div className="flex flex-col space-y-2">
+                <div className="px-3 py-2 border-b border-border">
+                  <p className="text-sm font-medium">{user?.name}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                </div>
+                {user?.role === 'lawyer' && (
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Link to="/lawyer-profile">
+                      <User className="h-4 w-4 mr-2" />
+                      My Profile
+                    </Link>
+                  </Button>
                 )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full justify-start text-destructive hover:text-destructive"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
               </div>
             </nav>
           </div>

@@ -285,7 +285,7 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
   return (
     <>
       {showOnboarding && <OnboardingTour onComplete={completeOnboarding} />}
-      <div className="flex h-[calc(100vh-4rem)] bg-background">
+      <div className="flex h-[calc(100vh-4rem-4rem)] lg:h-[calc(100vh-4rem)] bg-background">
       {/* Sidebar - Chat History */}
       <div className={cn(
         "border-r border-border bg-muted/20 flex-col transition-all duration-300",
