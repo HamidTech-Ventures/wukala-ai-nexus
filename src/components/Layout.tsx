@@ -4,6 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import logo from '@/assets/Wukala-GPT-Logo-Green.jpg';
+import PageTransition from './PageTransition';
+import MobileBottomNav from './MobileBottomNav';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -293,9 +295,14 @@ export default function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1">
-        {children}
+      <main className="flex-1 pb-16 lg:pb-0">
+        <PageTransition>
+          {children}
+        </PageTransition>
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
 
       {/* Footer - Show on all pages except AI Assistant */}
       {location.pathname !== '/chat' && (
