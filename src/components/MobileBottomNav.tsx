@@ -6,36 +6,35 @@ import {
   MessageSquare,
   FileText,
   Users,
-  Home,
   BookOpen,
   Gavel,
   User,
+  Newspaper,
 } from 'lucide-react';
 
 const publicNav = [
-  { name: 'Home', href: '/', icon: Home },
   { name: 'About', href: '/about', icon: BookOpen },
-  { name: 'Start', href: '/auth/role', icon: User },
+  { name: 'Leadership', href: '/leadership', icon: Users },
+  { name: 'Get Started', href: '/auth/role', icon: User },
 ];
 
 const clientNav = [
-  { name: 'Home', href: '/', icon: Home },
   { name: 'Chat', href: '/chat', icon: MessageSquare },
   { name: 'Docs', href: '/documents', icon: FileText },
   { name: 'Lawyers', href: '/lawyers', icon: Users },
   { name: 'Case Law', href: '/case-law', icon: Gavel },
+  { name: 'News', href: '/news', icon: Newspaper },
 ];
 
 const lawyerNav = [
-  { name: 'Home', href: '/', icon: Home },
   { name: 'Chat', href: '/chat', icon: MessageSquare },
   { name: 'Docs', href: '/documents', icon: FileText },
   { name: 'Case Law', href: '/case-law', icon: Gavel },
+  { name: 'News', href: '/news', icon: Newspaper },
   { name: 'Profile', href: '/lawyer-profile', icon: User },
 ];
 
 const adminNav = [
-  { name: 'Home', href: '/', icon: Home },
   { name: 'Admin', href: '/admin', icon: User },
 ];
 
