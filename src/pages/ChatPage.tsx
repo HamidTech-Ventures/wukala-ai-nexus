@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import OnboardingTour from '@/components/OnboardingTour';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   Send, 
   Mic, 
@@ -22,7 +23,8 @@ import {
   Copy,
   Volume2,
   PanelLeftClose,
-  PanelLeft
+  PanelLeft,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -45,6 +47,7 @@ interface ChatSession {
 export default function ChatPage() {
   const { showOnboarding, completeOnboarding } = useOnboarding();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -60,7 +63,8 @@ export default function ChatPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [recordingTime, setRecordingTime] = useState(0);
   const [recordingInterval, setRecordingInterval] = useState<NodeJS.Timeout | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // Default sidebar closed on mobile, open on desktop
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [chatSessions] = useState<ChatSession[]>([
     {
       id: '1',
@@ -85,6 +89,11 @@ export default function ChatPage() {
     }
   ]);
 
+  // Swipe gesture state
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -92,9 +101,41 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Set sidebar state based on screen size on mount
+  useEffect(() => {
+    setIsSidebarOpen(!isMobile);
+  }, [isMobile]);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Swipe gesture handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    const swipeThreshold = 50;
+    const swipeDistance = touchEndX.current - touchStartX.current;
+
+    // Swipe right to open sidebar (from left edge)
+    if (swipeDistance > swipeThreshold && touchStartX.current < 50 && !isSidebarOpen) {
+      setIsSidebarOpen(true);
+    }
+    // Swipe left to close sidebar
+    if (swipeDistance < -swipeThreshold && isSidebarOpen && isMobile) {
+      setIsSidebarOpen(false);
+    }
+
+    // Reset
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  }, [isSidebarOpen, isMobile]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -285,66 +326,106 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
   return (
     <>
       {showOnboarding && <OnboardingTour onComplete={completeOnboarding} />}
-      <div className="flex h-[calc(100vh-4rem-4rem)] lg:h-[calc(100vh-4rem)] bg-background">
-      {/* Sidebar - Chat History */}
-      <div className={cn(
-        "border-r border-border bg-muted/20 flex-col transition-all duration-300",
-        isSidebarOpen ? "flex w-full sm:w-72 lg:w-80 absolute sm:relative z-40 h-full sm:h-auto bg-background sm:bg-transparent" : "hidden"
-      )}>
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Chat History</h2>
-            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-              <MessageSquare className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {/* Search */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search conversations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </div>
+      <div 
+        className="flex h-[calc(100vh-4rem-4rem)] lg:h-[calc(100vh-4rem)] bg-background relative"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Mobile Overlay */}
+        {isSidebarOpen && isMobile && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
 
-        <ScrollArea className="flex-1">
-          <div className="px-4 pb-4">
-            {chatSessions.map((session) => (
-              <div
-                key={session.id}
-                className="group p-3 rounded-lg hover:bg-accent cursor-pointer transition-colors mb-2"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-sm truncate">
-                      {session.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground truncate mt-1">
-                      {session.lastMessage}
-                    </p>
-                    <div className="flex items-center mt-2 text-xs text-muted-foreground">
-                      <span>{formatDate(session.timestamp)}</span>
-                      <span className="mx-1">•</span>
-                      <span>{session.messageCount} messages</span>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+        {/* Sidebar - Chat History */}
+        <div 
+          ref={sidebarRef}
+          className={cn(
+            "border-r border-border bg-background flex-col transition-all duration-300 ease-in-out z-40",
+            isMobile 
+              ? cn(
+                  "fixed left-0 top-0 h-full w-[280px] transform",
+                  isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                )
+              : cn(
+                  "relative",
+                  isSidebarOpen ? "flex w-72 lg:w-80" : "hidden"
+                )
+          )}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Chat History</h2>
+              <div className="flex items-center gap-1">
+                <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
+                {isMobile && (
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => setIsSidebarOpen(false)}
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <X className="h-4 w-4" />
                   </Button>
-                </div>
+                )}
               </div>
-            ))}
+            </div>
+            
+            {/* Search */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search conversations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
           </div>
-        </ScrollArea>
-      </div>
+
+          <ScrollArea className="flex-1">
+            <div className="px-4 pb-4">
+              {chatSessions.map((session) => (
+                <div
+                  key={session.id}
+                  className="group p-3 rounded-lg hover:bg-accent cursor-pointer transition-colors mb-2"
+                  onClick={() => isMobile && setIsSidebarOpen(false)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-sm truncate">
+                        {session.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground truncate mt-1">
+                        {session.lastMessage}
+                      </p>
+                      <div className="flex items-center mt-2 text-xs text-muted-foreground">
+                        <span>{formatDate(session.timestamp)}</span>
+                        <span className="mx-1">•</span>
+                        <span>{session.messageCount} messages</span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
