@@ -52,7 +52,7 @@ export default function MobileBottomNav() {
   const navigation = getNavigation();
 
   // Hide on auth pages
-  const hideOnRoutes = ['/login', '/signup/client', '/signup/lawyer', '/auth/role', '/verify-otp'];
+  const hideOnRoutes = ['/login', '/signup/client', '/signup/lawyer', '/auth/role', '/verify-otp', '/lawyer-dashboard'];
   if (hideOnRoutes.includes(location.pathname)) return null;
 
   return (
