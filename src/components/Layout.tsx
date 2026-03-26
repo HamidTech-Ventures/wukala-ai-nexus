@@ -56,10 +56,9 @@ const clientNavigation = [
 ];
 
 const lawyerNavigation = [
+  { name: 'Dashboard', href: '/lawyer-dashboard', icon: Scale },
   { name: 'AI Assistant', href: '/chat', icon: MessageSquare },
   { name: 'Messages', href: '/messages', icon: MessageSquare },
-  { name: 'Documents', href: '/documents', icon: FileText },
-  { name: 'Find Lawyers', href: '/lawyers', icon: Users },
   { name: 'Case Law', href: '/case-law', icon: Gavel },
   { name: 'Legal News', href: '/news', icon: Newspaper },
   { name: 'Dictionary', href: '/dictionary', icon: BookOpen },
