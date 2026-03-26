@@ -27,6 +27,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import OTPVerificationPage from "./pages/auth/OTPVerificationPage";
 import ProfilePage from "./pages/auth/ProfilePage";
 import AdminPanel from "./pages/admin/AdminPanel";
+import LawyerDashboard from "./pages/lawyer/LawyerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/verify-otp" element={<OTPVerificationPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/lawyer-dashboard" element={<LawyerDashboard />} />
           
           {/* Main app routes with layout */}
           <Route path="/" element={<Layout><HomePage /></Layout>} />

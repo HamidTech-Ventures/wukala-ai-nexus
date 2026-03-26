@@ -27,8 +27,8 @@ const clientNav = [
 ];
 
 const lawyerNav = [
+  { name: 'Dashboard', href: '/lawyer-dashboard', icon: BookOpen },
   { name: 'Chat', href: '/chat', icon: MessageSquare },
-  { name: 'Docs', href: '/documents', icon: FileText },
   { name: 'Case Law', href: '/case-law', icon: Gavel },
   { name: 'News', href: '/news', icon: Newspaper },
   { name: 'Profile', href: '/lawyer-profile', icon: User },

@@ -62,7 +62,7 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [recordingTime, setRecordingTime] = useState(0);
-  const [recordingInterval, setRecordingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
   // Default sidebar closed on mobile, open on desktop
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [chatSessions] = useState<ChatSession[]>([
