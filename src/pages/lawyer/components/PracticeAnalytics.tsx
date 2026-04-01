@@ -1,8 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
 import {
   TrendingUp,
   TrendingDown,
@@ -13,19 +12,18 @@ import {
   Scale,
   Target,
   Award,
-  ArrowRight,
   Calendar,
   Users,
-  FileText,
   PieChart,
   Activity,
-  Zap,
   ArrowUpRight,
   ArrowDownRight,
-  ChevronRight,
   Download,
   Filter,
-  AlertTriangle,
+  Flame,
+  UserPlus,
+  Repeat,
+  MapPin,
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,127 +38,115 @@ interface KPI {
   detail: string;
 }
 
-interface RevenueMonth {
-  month: string;
-  revenue: number;
-  expenses: number;
-  profit: number;
-  cases: number;
-}
-
-interface CaseMetric {
-  outcome: string;
-  count: number;
-  pct: number;
-  color: string;
-}
-
-interface PracticeArea {
-  area: string;
-  activeCases: number;
-  closedCases: number;
-  revenue: string;
-  revenueNum: number;
-  growth: string;
-  winRate: number;
-  avgDuration: string;
-}
-
-interface BillingTrend {
-  month: string;
-  billed: number;
-  collected: number;
-  outstanding: number;
-}
-
-interface LawyerPerformance {
-  name: string;
-  role: string;
-  cases: number;
-  winRate: number;
-  revenue: string;
-  satisfaction: number;
-  billableHrs: number;
-}
-
 // ── Data ──
-const kpis: KPI[] = [
-  { label: 'Win Rate', value: '73%', change: '+5%', trend: 'up', icon: Award, detail: 'vs 68% last quarter' },
-  { label: 'Avg. Case Duration', value: '4.2 mo', change: '-0.8 mo', trend: 'up', icon: Clock, detail: 'Improved efficiency' },
-  { label: 'Revenue / Case', value: '₨ 89K', change: '+12%', trend: 'up', icon: DollarSign, detail: 'Up from ₨ 79K' },
-  { label: 'Client Retention', value: '91%', change: '+3%', trend: 'up', icon: Target, detail: '42 of 46 clients retained' },
-  { label: 'Billable Hours', value: '168 hrs', change: '+8%', trend: 'up', icon: Activity, detail: 'This month target: 180 hrs' },
-  { label: 'Collection Rate', value: '87%', change: '-2%', trend: 'down', icon: DollarSign, detail: '₨ 1.2M outstanding' },
+const kpiCards: KPI[] = [
+  { label: 'Active Cases', value: '34', change: '+6', trend: 'up', icon: Briefcase, detail: 'vs 28 last month' },
+  { label: 'Win Rate', value: '78%', change: '+4%', trend: 'up', icon: Award, detail: 'Won 32 of 41 decided' },
+  { label: 'Avg. Case Duration', value: '8.2 mo', change: '-1.3', trend: 'up', icon: Clock, detail: 'Down from 9.5 months' },
+  { label: 'Monthly Revenue', value: '₨ 4.2M', change: '+18%', trend: 'up', icon: DollarSign, detail: 'vs ₨ 3.6M last month' },
+  { label: 'Collection Rate', value: '82%', change: '-3%', trend: 'down', icon: Target, detail: '₨ 3.4M of ₨ 4.2M collected' },
+  { label: 'New Clients', value: '7', change: '+2', trend: 'up', icon: UserPlus, detail: '5 referrals, 2 organic' },
 ];
 
-const monthlyRevenue: RevenueMonth[] = [
-  { month: 'Oct', revenue: 2800000, expenses: 980000, profit: 1820000, cases: 8 },
-  { month: 'Nov', revenue: 3200000, expenses: 1100000, profit: 2100000, cases: 11 },
-  { month: 'Dec', revenue: 2900000, expenses: 950000, profit: 1950000, cases: 7 },
-  { month: 'Jan', revenue: 3500000, expenses: 1200000, profit: 2300000, cases: 13 },
-  { month: 'Feb', revenue: 3800000, expenses: 1150000, profit: 2650000, cases: 10 },
-  { month: 'Mar', revenue: 4200000, expenses: 1400000, profit: 2800000, cases: 14 },
-  { month: 'Apr', revenue: 3900000, expenses: 1250000, profit: 2650000, cases: 12 },
-  { month: 'May', revenue: 4500000, expenses: 1500000, profit: 3000000, cases: 15 },
+const revenueData = [
+  { month: 'Jul', revenue: 280, expenses: 120 },
+  { month: 'Aug', revenue: 320, expenses: 140 },
+  { month: 'Sep', revenue: 310, expenses: 130 },
+  { month: 'Oct', revenue: 380, expenses: 150 },
+  { month: 'Nov', revenue: 350, expenses: 145 },
+  { month: 'Dec', revenue: 420, expenses: 160 },
+  { month: 'Jan', revenue: 390, expenses: 155 },
+  { month: 'Feb', revenue: 450, expenses: 170 },
+  { month: 'Mar', revenue: 480, expenses: 175 },
+  { month: 'Apr', revenue: 520, expenses: 180 },
+  { month: 'May', revenue: 490, expenses: 165 },
+  { month: 'Jun', revenue: 560, expenses: 190 },
 ];
 
-const maxRevenue = Math.max(...monthlyRevenue.map(m => m.revenue));
-
-const caseOutcomes: CaseMetric[] = [
-  { outcome: 'Won', count: 32, pct: 73, color: 'bg-success' },
-  { outcome: 'Settled', count: 8, pct: 18, color: 'bg-gold' },
-  { outcome: 'Lost', count: 4, pct: 9, color: 'bg-destructive' },
+const caseOutcomes = [
+  { label: 'Won', value: 32, pct: 78, color: 'bg-success' },
+  { label: 'Lost', value: 5, pct: 12, color: 'bg-destructive' },
+  { label: 'Settled', value: 4, pct: 10, color: 'bg-gold' },
 ];
 
-const casesByType: CaseMetric[] = [
-  { outcome: 'Civil', count: 22, pct: 40, color: 'bg-primary' },
-  { outcome: 'Criminal', count: 14, pct: 25, color: 'bg-destructive' },
-  { outcome: 'Corporate', count: 11, pct: 20, color: 'bg-gold' },
-  { outcome: 'Tax/Revenue', count: 8, pct: 15, color: 'bg-success' },
+const courtAnalytics = [
+  { court: 'District Court, Lahore', hearings: 48, cases: 14, winRate: '82%', color: 'bg-primary' },
+  { court: 'Lahore High Court', hearings: 22, cases: 8, winRate: '75%', color: 'bg-success' },
+  { court: 'Supreme Court', hearings: 6, cases: 3, winRate: '67%', color: 'bg-destructive' },
+  { court: 'Banking Court', hearings: 12, cases: 5, winRate: '80%', color: 'bg-gold' },
+  { court: 'NAB Court', hearings: 8, cases: 4, winRate: '50%', color: 'bg-primary-muted' },
 ];
 
-const practiceAreas: PracticeArea[] = [
-  { area: 'Civil Litigation', activeCases: 18, closedCases: 22, revenue: '₨ 1.6M', revenueNum: 1600000, growth: '+22%', winRate: 78, avgDuration: '3.8 mo' },
-  { area: 'Criminal Defense', activeCases: 12, closedCases: 15, revenue: '₨ 1.1M', revenueNum: 1100000, growth: '+8%', winRate: 67, avgDuration: '5.1 mo' },
-  { area: 'Corporate Law', activeCases: 9, closedCases: 11, revenue: '₨ 890K', revenueNum: 890000, growth: '+35%', winRate: 82, avgDuration: '2.5 mo' },
-  { area: 'Tax & Revenue', activeCases: 8, closedCases: 6, revenue: '₨ 600K', revenueNum: 600000, growth: '+15%', winRate: 71, avgDuration: '4.7 mo' },
-  { area: 'Family Law', activeCases: 5, closedCases: 8, revenue: '₨ 380K', revenueNum: 380000, growth: '+10%', winRate: 75, avgDuration: '6.2 mo' },
+const winRateByType = [
+  { type: 'Civil Litigation', won: 14, total: 17, rate: '82%' },
+  { type: 'Criminal Defense', won: 8, total: 11, rate: '73%' },
+  { type: 'Corporate/Commercial', won: 6, total: 7, rate: '86%' },
+  { type: 'Family Law', won: 4, total: 6, rate: '67%' },
 ];
 
-const maxAreaRevenue = Math.max(...practiceAreas.map(p => p.revenueNum));
-
-const billingTrends: BillingTrend[] = [
-  { month: 'Oct', billed: 2800000, collected: 2400000, outstanding: 400000 },
-  { month: 'Nov', billed: 3200000, collected: 2900000, outstanding: 700000 },
-  { month: 'Dec', billed: 2900000, collected: 2500000, outstanding: 1100000 },
-  { month: 'Jan', billed: 3500000, collected: 3100000, outstanding: 1500000 },
-  { month: 'Feb', billed: 3800000, collected: 3400000, outstanding: 1900000 },
-  { month: 'Mar', billed: 4200000, collected: 3700000, outstanding: 2400000 },
+const clientInsights = [
+  { name: 'Khan Industries Pvt Ltd', cases: 5, totalBilled: '₨ 1.8M', status: 'Active', retention: '3 years' },
+  { name: 'Ahmed Real Estate Group', cases: 3, totalBilled: '₨ 1.2M', status: 'Active', retention: '2 years' },
+  { name: 'Fatima Bibi', cases: 2, totalBilled: '₨ 450K', status: 'Active', retention: '1 year' },
+  { name: 'Islamabad Developers', cases: 4, totalBilled: '₨ 980K', status: 'Active', retention: '18 months' },
+  { name: 'National Foods Ltd', cases: 1, totalBilled: '₨ 320K', status: 'New', retention: '2 months' },
 ];
 
-const maxBilling = Math.max(...billingTrends.map(b => b.billed));
-
-const teamPerformance: LawyerPerformance[] = [
-  { name: 'Adv. Ahmed Khan', role: 'Senior Partner', cases: 14, winRate: 79, revenue: '₨ 1.8M', satisfaction: 4.8, billableHrs: 192 },
-  { name: 'Adv. Sara Malik', role: 'Associate', cases: 11, winRate: 73, revenue: '₨ 1.2M', satisfaction: 4.6, billableHrs: 178 },
-  { name: 'Adv. Usman Ali', role: 'Junior Associate', cases: 9, winRate: 67, revenue: '₨ 650K', satisfaction: 4.4, billableHrs: 165 },
-  { name: 'Adv. Fatima Noor', role: 'Associate', cases: 10, winRate: 80, revenue: '₨ 980K', satisfaction: 4.7, billableHrs: 185 },
+const heatmapData = [
+  // weeks x days (0=Sun to 6=Sat), intensity 0-4
+  [0, 2, 3, 1, 4, 2, 0],
+  [0, 1, 2, 3, 2, 1, 0],
+  [0, 3, 4, 2, 3, 1, 0],
+  [0, 2, 1, 4, 3, 2, 0],
+  [0, 1, 3, 2, 4, 3, 0],
+  [0, 2, 2, 3, 1, 2, 0],
+  [0, 4, 3, 2, 3, 1, 0],
+  [0, 1, 2, 4, 2, 3, 0],
+  [0, 3, 1, 3, 4, 2, 0],
+  [0, 2, 3, 1, 2, 1, 0],
+  [0, 1, 4, 3, 3, 2, 0],
+  [0, 2, 2, 4, 1, 3, 0],
 ];
 
-const tabs = [
-  { id: 'overview', label: 'Overview', icon: BarChart3 },
-  { id: 'revenue', label: 'Revenue', icon: DollarSign },
-  { id: 'cases', label: 'Cases', icon: Scale },
-  { id: 'billing', label: 'Billing', icon: FileText },
-  { id: 'team', label: 'Team', icon: Users },
+const heatColors = ['bg-secondary', 'bg-success/20', 'bg-success/40', 'bg-success/60', 'bg-success/80'];
+const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+type TabKey = 'overview' | 'cases' | 'revenue' | 'clients' | 'workload';
+
+const tabs: { key: TabKey; label: string; icon: React.ElementType }[] = [
+  { key: 'overview', label: 'Overview', icon: BarChart3 },
+  { key: 'cases', label: 'Cases & Courts', icon: Scale },
+  { key: 'revenue', label: 'Revenue', icon: DollarSign },
+  { key: 'clients', label: 'Client Insights', icon: Users },
+  { key: 'workload', label: 'Workload', icon: Flame },
 ];
 
-type TabId = 'overview' | 'revenue' | 'cases' | 'billing' | 'team';
+const fadeIn = { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -8 }, transition: { duration: 0.25 } };
+
+// ── Helpers ──
+function MiniBarChart({ data, maxVal }: { data: { month: string; revenue: number; expenses: number }[]; maxVal: number }) {
+  return (
+    <div className="flex items-end gap-1.5 h-36 mt-2">
+      {data.map(d => (
+        <div key={d.month} className="flex-1 flex flex-col items-center gap-0.5">
+          <div className="w-full flex flex-col items-center gap-0.5" style={{ height: '120px' }}>
+            <div className="w-full flex gap-0.5 items-end h-full">
+              <div className="flex-1 bg-primary/80 rounded-t-sm transition-all duration-500" style={{ height: `${(d.revenue / maxVal) * 100}%` }} />
+              <div className="flex-1 bg-destructive/40 rounded-t-sm transition-all duration-500" style={{ height: `${(d.expenses / maxVal) * 100}%` }} />
+            </div>
+          </div>
+          <span className="text-[8px] text-muted-foreground font-sans">{d.month}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function PracticeAnalytics() {
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [period, setPeriod] = useState('6m');
-  const [selectedArea, setSelectedArea] = useState<PracticeArea | null>(null);
+  const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const [period, setPeriod] = useState('12m');
+
+  const maxRevenue = Math.max(...revenueData.map(d => d.revenue));
 
   return (
     <div className="space-y-5">
@@ -168,31 +154,27 @@ export default function PracticeAnalytics() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold font-sans text-foreground">Practice Analytics</h2>
-          <p className="text-xs text-muted-foreground font-sans mt-0.5">Performance insights & metrics</p>
+          <p className="text-xs text-muted-foreground font-sans mt-0.5">Business intelligence for your legal practice</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex bg-secondary/50 rounded-lg p-0.5">
-            {['1m', '3m', '6m', '1y'].map(p => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`px-2.5 py-1 text-[10px] font-sans font-medium rounded-md transition-colors ${period === p ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-              >
+          <div className="flex bg-secondary/50 rounded-md p-0.5">
+            {['3m', '6m', '12m'].map(p => (
+              <Button key={p} variant={period === p ? 'default' : 'ghost'} size="sm" className="h-7 text-[10px] px-2.5 font-sans" onClick={() => setPeriod(p)}>
                 {p.toUpperCase()}
-              </button>
+              </Button>
             ))}
           </div>
-          <Button variant="outline" size="sm" className="font-sans text-xs h-8 border-border/50 gap-1.5">
-            <Download className="h-3 w-3" /> Export
+          <Button variant="outline" size="sm" className="h-8 text-xs font-sans gap-1.5">
+            <Download className="h-3.5 w-3.5" /> Export
           </Button>
         </div>
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={v => { setActiveTab(v as TabId); setSelectedArea(null); }}>
-        <TabsList className="bg-secondary/50 h-9 flex-wrap">
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)}>
+        <TabsList className="bg-secondary/50 h-9 p-0.5 w-full justify-start overflow-x-auto">
           {tabs.map(t => (
-            <TabsTrigger key={t.id} value={t.id} className="text-xs font-sans h-7 gap-1.5">
+            <TabsTrigger key={t.key} value={t.key} className="text-[11px] font-sans gap-1 px-2.5 data-[state=active]:bg-background">
               <t.icon className="h-3 w-3" /> {t.label}
             </TabsTrigger>
           ))}
@@ -200,531 +182,389 @@ export default function PracticeAnalytics() {
       </Tabs>
 
       <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.2 }}
-        >
-          {activeTab === 'overview' && <OverviewTab />}
-          {activeTab === 'revenue' && <RevenueTab />}
-          {activeTab === 'cases' && <CasesTab selectedArea={selectedArea} setSelectedArea={setSelectedArea} />}
-          {activeTab === 'billing' && <BillingTab />}
-          {activeTab === 'team' && <TeamTab />}
-        </motion.div>
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ── Overview Tab ──
-function OverviewTab() {
-  return (
-    <div className="space-y-5">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {kpis.map(k => (
-          <Card key={k.label} className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground">
-                  <k.icon className="h-4 w-4" />
-                </div>
-                <Badge variant="outline" className={`text-[10px] font-sans gap-0.5 ${k.trend === 'up' ? 'text-success border-success/20' : 'text-destructive border-destructive/20'}`}>
-                  {k.trend === 'up' ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                  {k.change}
-                </Badge>
-              </div>
-              <p className="text-lg font-bold font-sans text-foreground">{k.value}</p>
-              <p className="text-[10px] text-muted-foreground font-sans mt-0.5">{k.label}</p>
-              <p className="text-[9px] text-muted-foreground/70 font-sans mt-1">{k.detail}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid lg:grid-cols-5 gap-4">
-        {/* Revenue Chart */}
-        <Card className="lg:col-span-3 border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-primary" /> Revenue vs Expenses
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-end gap-1.5 h-44">
-              {monthlyRevenue.map(m => (
-                <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[8px] text-muted-foreground font-sans font-medium">
-                    {(m.revenue / 1000000).toFixed(1)}M
-                  </span>
-                  <div className="w-full flex flex-col gap-0.5">
-                    <div
-                      className="w-full bg-primary/80 rounded-t-sm transition-all duration-500 hover:bg-primary"
-                      style={{ height: `${(m.revenue / maxRevenue) * 100}px` }}
-                    />
-                    <div
-                      className="w-full bg-destructive/30 rounded-b-sm"
-                      style={{ height: `${(m.expenses / maxRevenue) * 100}px` }}
-                    />
-                  </div>
-                  <span className="text-[9px] text-muted-foreground font-sans">{m.month}</span>
-                </div>
+        {/* ═══ OVERVIEW ═══ */}
+        {activeTab === 'overview' && (
+          <motion.div key="overview" {...fadeIn} className="space-y-5">
+            {/* KPI Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              {kpiCards.map(k => (
+                <Card key={k.label} className="border-border/50 shadow-sm hover:shadow-md transition-all">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <k.icon className="h-4.5 w-4.5 text-primary" />
+                      </div>
+                      <Badge variant="outline" className={`text-[9px] font-sans ${k.trend === 'up' ? 'text-success border-success/30' : 'text-destructive border-destructive/30'}`}>
+                        {k.trend === 'up' ? <ArrowUpRight className="h-2.5 w-2.5 mr-0.5" /> : <ArrowDownRight className="h-2.5 w-2.5 mr-0.5" />}
+                        {k.change}
+                      </Badge>
+                    </div>
+                    <p className="text-xl font-bold font-sans text-foreground mt-2">{k.value}</p>
+                    <p className="text-[11px] font-semibold font-sans text-foreground/80">{k.label}</p>
+                    <p className="text-[10px] text-muted-foreground font-sans mt-0.5">{k.detail}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
-            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/30">
-              <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-sans">
-                <div className="h-2 w-2 rounded-full bg-primary/80" /> Revenue
-              </span>
-              <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-sans">
-                <div className="h-2 w-2 rounded-full bg-destructive/30" /> Expenses
-              </span>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Case Outcomes */}
-        <Card className="lg:col-span-2 border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
-              <Scale className="h-4 w-4 text-primary" /> Case Outcomes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Donut-style ring */}
-            <div className="flex items-center justify-center py-2">
-              <div className="relative h-28 w-28">
-                <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
-                  {caseOutcomes.reduce((acc, o, i) => {
-                    const offset = acc;
-                    const circumference = 2 * Math.PI * 40;
-                    const dash = (o.pct / 100) * circumference;
-                    const colors = ['hsl(var(--success))', 'hsl(var(--gold))', 'hsl(var(--destructive))'];
-                    return (
-                      <>
-                        {acc}
-                        <circle
-                          key={o.outcome}
-                          cx="50" cy="50" r="40"
-                          fill="none"
-                          stroke={colors[i]}
-                          strokeWidth="12"
-                          strokeDasharray={`${dash} ${circumference - dash}`}
-                          strokeDashoffset={`-${typeof offset === 'number' ? offset : 0}`}
-                          className="transition-all duration-700"
-                        />
-                      </>
-                    );
-                  }, 0 as any)}
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xl font-bold font-sans text-foreground">73%</span>
-                  <span className="text-[9px] text-muted-foreground font-sans">Win Rate</span>
-                </div>
-              </div>
-            </div>
-            {caseOutcomes.map(o => (
-              <div key={o.outcome} className="flex items-center justify-between text-xs font-sans">
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <div className={`h-2.5 w-2.5 rounded-full ${o.color}`} />
-                  {o.outcome}
-                </span>
-                <span className="font-medium text-foreground">{o.count} ({o.pct}%)</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Practice Areas */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold font-sans">Top Practice Areas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {practiceAreas.slice(0, 4).map(p => (
-              <div key={p.area} className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/20">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-secondary flex items-center justify-center">
-                    <Briefcase className="h-4 w-4 text-muted-foreground" />
+            {/* Revenue Chart + Case Outcomes side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
+              <Card className="lg:col-span-3 border-border/50 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="text-sm font-semibold font-sans text-foreground">Revenue vs Expenses</h3>
+                    <div className="flex items-center gap-3 text-[9px] font-sans">
+                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary/80" /> Revenue</span>
+                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-destructive/40" /> Expenses</span>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium font-sans text-foreground">{p.area}</p>
-                    <p className="text-[11px] text-muted-foreground font-sans">{p.activeCases} active · {p.winRate}% win rate</p>
+                  <MiniBarChart data={revenueData} maxVal={maxRevenue} />
+                </CardContent>
+              </Card>
+
+              <Card className="lg:col-span-2 border-border/50 shadow-sm">
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Case Outcomes</h3>
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="relative h-28 w-28">
+                      <svg viewBox="0 0 36 36" className="h-full w-full -rotate-90">
+                        {caseOutcomes.reduce((acc, o, i) => {
+                          const offset = acc;
+                          const dash = o.pct;
+                          return acc + dash;
+                        }, 0) && null}
+                        {(() => {
+                          let offset = 0;
+                          return caseOutcomes.map((o, i) => {
+                            const colors = ['hsl(var(--success))', 'hsl(var(--destructive))', 'hsl(var(--gold))'];
+                            const el = (
+                              <circle key={i} cx="18" cy="18" r="15.9" fill="none" strokeWidth="3.5"
+                                stroke={colors[i]} strokeDasharray={`${o.pct} ${100 - o.pct}`}
+                                strokeDashoffset={-offset} strokeLinecap="round" />
+                            );
+                            offset += o.pct;
+                            return el;
+                          });
+                        })()}
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <p className="text-lg font-bold font-sans text-foreground">41</p>
+                        <p className="text-[8px] text-muted-foreground font-sans">Total Decided</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold font-sans text-foreground">{p.revenue}</p>
-                  <p className="text-[10px] text-success font-sans">{p.growth}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-// ── Revenue Tab ──
-function RevenueTab() {
-  const totalRevenue = monthlyRevenue.reduce((s, m) => s + m.revenue, 0);
-  const totalExpenses = monthlyRevenue.reduce((s, m) => s + m.expenses, 0);
-  const totalProfit = totalRevenue - totalExpenses;
-  const profitMargin = ((totalProfit / totalRevenue) * 100).toFixed(1);
-
-  return (
-    <div className="space-y-5">
-      {/* Revenue Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          { label: 'Total Revenue', value: `₨ ${(totalRevenue / 1000000).toFixed(1)}M`, icon: DollarSign, sub: 'Last 8 months' },
-          { label: 'Total Expenses', value: `₨ ${(totalExpenses / 1000000).toFixed(1)}M`, icon: TrendingDown, sub: `${((totalExpenses / totalRevenue) * 100).toFixed(0)}% of revenue` },
-          { label: 'Net Profit', value: `₨ ${(totalProfit / 1000000).toFixed(1)}M`, icon: TrendingUp, sub: `${profitMargin}% margin` },
-          { label: 'Avg Monthly', value: `₨ ${(totalRevenue / monthlyRevenue.length / 1000000).toFixed(1)}M`, icon: BarChart3, sub: 'Per month avg' },
-        ].map(s => (
-          <Card key={s.label} className="border-border/50 shadow-sm">
-            <CardContent className="p-4">
-              <div className="h-7 w-7 rounded-md bg-secondary flex items-center justify-center text-muted-foreground mb-2">
-                <s.icon className="h-3.5 w-3.5" />
-              </div>
-              <p className="text-lg font-bold font-sans text-foreground">{s.value}</p>
-              <p className="text-[10px] text-muted-foreground font-sans">{s.label}</p>
-              <p className="text-[9px] text-muted-foreground/60 font-sans mt-0.5">{s.sub}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Revenue + Profit Chart */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-primary" /> Revenue, Expenses & Profit Trend
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {monthlyRevenue.map(m => (
-              <div key={m.month} className="flex items-center gap-3">
-                <span className="text-[10px] text-muted-foreground font-sans w-8 shrink-0">{m.month}</span>
-                <div className="flex-1 flex flex-col gap-0.5">
-                  <div className="flex items-center gap-1">
-                    <div className="h-3 bg-primary/80 rounded-sm transition-all duration-500" style={{ width: `${(m.revenue / maxRevenue) * 100}%` }} />
-                    <span className="text-[8px] text-muted-foreground font-sans">{(m.revenue / 1000000).toFixed(1)}M</span>
+                  <div className="space-y-2">
+                    {caseOutcomes.map(o => (
+                      <div key={o.label} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`h-2.5 w-2.5 rounded-full ${o.color}`} />
+                          <span className="text-xs font-sans text-foreground">{o.label}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold font-sans text-foreground">{o.value}</span>
+                          <span className="text-[10px] text-muted-foreground font-sans">({o.pct}%)</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div className="h-3 bg-success/60 rounded-sm transition-all duration-500" style={{ width: `${(m.profit / maxRevenue) * 100}%` }} />
-                    <span className="text-[8px] text-muted-foreground font-sans">{(m.profit / 1000000).toFixed(1)}M</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/30">
-            <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-sans">
-              <div className="h-2 w-2 rounded-full bg-primary/80" /> Revenue
-            </span>
-            <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-sans">
-              <div className="h-2 w-2 rounded-full bg-success/60" /> Profit
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Revenue by Practice Area */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold font-sans">Revenue by Practice Area</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {practiceAreas.map(p => (
-            <div key={p.area} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-sans">
-                <span className="text-foreground font-medium">{p.area}</span>
-                <span className="text-muted-foreground">{p.revenue} <span className="text-success">{p.growth}</span></span>
-              </div>
-              <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                <div className="h-full bg-primary/70 rounded-full transition-all duration-700" style={{ width: `${(p.revenueNum / maxAreaRevenue) * 100}%` }} />
-              </div>
+                </CardContent>
+              </Card>
             </div>
-          ))}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+          </motion.div>
+        )}
 
-// ── Cases Tab ──
-function CasesTab({ selectedArea, setSelectedArea }: { selectedArea: PracticeArea | null; setSelectedArea: (a: PracticeArea | null) => void }) {
-  if (selectedArea) {
-    return (
-      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-5">
-        <Button variant="ghost" size="sm" onClick={() => setSelectedArea(null)} className="text-xs font-sans gap-1 text-muted-foreground h-7 px-2">
-          ← Back to overview
-        </Button>
-        <Card className="border-border/50 shadow-sm">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Briefcase className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-base font-semibold font-sans text-foreground">{selectedArea.area}</h3>
-                <p className="text-[11px] text-muted-foreground font-sans">Detailed performance breakdown</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
+        {/* ═══ CASES & COURTS ═══ */}
+        {activeTab === 'cases' && (
+          <motion.div key="cases" {...fadeIn} className="space-y-5">
+            {/* Win Rate by Case Type */}
+            <Card className="border-border/50 shadow-sm">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Win Rate by Practice Area</h3>
+                <div className="space-y-3">
+                  {winRateByType.map(w => (
+                    <div key={w.type}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-sans text-foreground">{w.type}</span>
+                        <span className="text-xs font-bold font-sans text-foreground">{w.rate} <span className="text-muted-foreground font-normal">({w.won}/{w.total})</span></span>
+                      </div>
+                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                        <div className="h-full bg-success rounded-full transition-all duration-700" style={{ width: w.rate }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Court Analytics */}
+            <Card className="border-border/50 shadow-sm">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Court Analytics</h3>
+                <div className="space-y-2">
+                  {courtAnalytics.map(c => (
+                    <div key={c.court} className="flex items-center gap-3 p-2.5 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                      <div className={`h-2 w-2 rounded-full ${c.color} shrink-0`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold font-sans text-foreground truncate">{c.court}</p>
+                        <div className="flex items-center gap-3 mt-0.5 text-[10px] text-muted-foreground font-sans">
+                          <span className="flex items-center gap-0.5"><Calendar className="h-3 w-3" /> {c.hearings} hearings</span>
+                          <span className="flex items-center gap-0.5"><Briefcase className="h-3 w-3" /> {c.cases} cases</span>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-bold font-sans text-foreground">{c.winRate}</p>
+                        <p className="text-[9px] text-muted-foreground font-sans">win rate</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Case Status Pipeline */}
+            <Card className="border-border/50 shadow-sm">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Case Pipeline</h3>
+                <div className="flex items-center gap-1">
+                  {[
+                    { stage: 'Filed', count: 6, color: 'bg-primary/20 text-primary' },
+                    { stage: 'Heard', count: 14, color: 'bg-gold/20 text-gold' },
+                    { stage: 'Reserved', count: 8, color: 'bg-warning/20 text-warning' },
+                    { stage: 'Decided', count: 4, color: 'bg-success/20 text-success' },
+                    { stage: 'Appeal', count: 2, color: 'bg-destructive/20 text-destructive' },
+                  ].map((s, i, arr) => (
+                    <div key={s.stage} className="flex items-center gap-1 flex-1">
+                      <div className={`flex-1 rounded-lg p-3 text-center ${s.color}`}>
+                        <p className="text-lg font-bold font-sans">{s.count}</p>
+                        <p className="text-[9px] font-sans font-medium">{s.stage}</p>
+                      </div>
+                      {i < arr.length - 1 && <span className="text-muted-foreground/40 text-xs">›</span>}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* ═══ REVENUE ═══ */}
+        {activeTab === 'revenue' && (
+          <motion.div key="revenue" {...fadeIn} className="space-y-5">
+            {/* Revenue Summary Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {[
-                { label: 'Active Cases', value: selectedArea.activeCases },
-                { label: 'Closed Cases', value: selectedArea.closedCases },
-                { label: 'Win Rate', value: `${selectedArea.winRate}%` },
-                { label: 'Avg Duration', value: selectedArea.avgDuration },
-                { label: 'Revenue', value: selectedArea.revenue },
-                { label: 'Growth', value: selectedArea.growth },
+                { label: 'Yearly Revenue', value: '₨ 48.5M', sub: 'FY 2024-25' },
+                { label: 'Avg Fee / Case', value: '₨ 1.4M', sub: 'Across 34 cases' },
+                { label: 'Collection Efficiency', value: '82%', sub: '₨ 39.8M collected' },
+                { label: 'Outstanding', value: '₨ 8.7M', sub: '12 pending invoices' },
               ].map(s => (
-                <div key={s.label} className="p-3 rounded-lg bg-secondary/30 border border-border/20">
-                  <p className="text-lg font-bold font-sans text-foreground">{s.value}</p>
-                  <p className="text-[10px] text-muted-foreground font-sans">{s.label}</p>
-                </div>
+                <Card key={s.label} className="border-border/50 shadow-sm">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-lg font-bold font-sans text-foreground">{s.value}</p>
+                    <p className="text-[11px] font-semibold font-sans text-foreground/80">{s.label}</p>
+                    <p className="text-[9px] text-muted-foreground font-sans mt-0.5">{s.sub}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-    );
-  }
 
-  return (
-    <div className="space-y-5">
-      <div className="grid lg:grid-cols-2 gap-4">
-        {/* Case Outcomes */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
-              <Scale className="h-4 w-4 text-primary" /> Case Outcomes (All Time)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-1 h-5 rounded-full overflow-hidden">
-              {caseOutcomes.map(o => (
-                <div key={o.outcome} className={`h-full ${o.color} transition-all duration-500`} style={{ width: `${o.pct}%` }} />
+            {/* Monthly Revenue Chart */}
+            <Card className="border-border/50 shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-sm font-semibold font-sans text-foreground">Monthly Revenue Trend</h3>
+                  <div className="flex items-center gap-3 text-[9px] font-sans">
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary/80" /> Revenue</span>
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-destructive/40" /> Expenses</span>
+                  </div>
+                </div>
+                <MiniBarChart data={revenueData} maxVal={maxRevenue} />
+              </CardContent>
+            </Card>
+
+            {/* Top Paying Clients */}
+            <Card className="border-border/50 shadow-sm">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Top Paying Clients</h3>
+                <div className="space-y-2">
+                  {clientInsights.slice(0, 4).map((c, i) => (
+                    <div key={c.name} className="flex items-center justify-between p-2.5 rounded-lg bg-secondary/30">
+                      <div className="flex items-center gap-2.5">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold font-sans text-primary">{i + 1}</span>
+                        <div>
+                          <p className="text-xs font-semibold font-sans text-foreground">{c.name}</p>
+                          <p className="text-[10px] text-muted-foreground font-sans">{c.cases} cases</p>
+                        </div>
+                      </div>
+                      <p className="text-sm font-bold font-sans text-foreground">{c.totalBilled}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* ═══ CLIENT INSIGHTS ═══ */}
+        {activeTab === 'clients' && (
+          <motion.div key="clients" {...fadeIn} className="space-y-5">
+            {/* Client KPIs */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { label: 'Total Clients', value: '42', icon: Users, change: '+7 this quarter' },
+                { label: 'Retention Rate', value: '89%', icon: Repeat, change: 'Returning clients' },
+                { label: 'New This Month', value: '7', icon: UserPlus, change: '5 referrals' },
+                { label: 'Avg. Lifetime Value', value: '₨ 2.1M', icon: DollarSign, change: 'Per client' },
+              ].map(s => (
+                <Card key={s.label} className="border-border/50 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                      <s.icon className="h-4 w-4 text-primary" />
+                    </div>
+                    <p className="text-lg font-bold font-sans text-foreground">{s.value}</p>
+                    <p className="text-[11px] font-semibold font-sans text-foreground/80">{s.label}</p>
+                    <p className="text-[9px] text-muted-foreground font-sans">{s.change}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
-            {caseOutcomes.map(o => (
-              <div key={o.outcome} className="flex items-center justify-between text-xs font-sans">
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <div className={`h-2.5 w-2.5 rounded-full ${o.color}`} />
-                  {o.outcome}
-                </span>
-                <span className="font-medium text-foreground">{o.count} ({o.pct}%)</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
 
-        {/* Cases by Type */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
-              <PieChart className="h-4 w-4 text-primary" /> Cases by Type
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-1 h-5 rounded-full overflow-hidden">
-              {casesByType.map(c => (
-                <div key={c.outcome} className={`h-full ${c.color} transition-all duration-500`} style={{ width: `${c.pct}%` }} />
-              ))}
+            {/* Client List */}
+            <Card className="border-border/50 shadow-sm">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Client Portfolio</h3>
+                <div className="space-y-2">
+                  {clientInsights.map(c => (
+                    <div key={c.name} className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-secondary/30 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold font-sans text-primary">
+                          {c.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold font-sans text-foreground">{c.name}</p>
+                          <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-sans">
+                            <span>{c.cases} cases</span>
+                            <span>·</span>
+                            <span>{c.retention} relationship</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold font-sans text-foreground">{c.totalBilled}</p>
+                        <Badge variant="outline" className={`text-[9px] font-sans ${c.status === 'New' ? 'text-gold border-gold/30' : 'text-success border-success/30'}`}>
+                          {c.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Referral Sources */}
+            <Card className="border-border/50 shadow-sm">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Client Acquisition Sources</h3>
+                <div className="space-y-2.5">
+                  {[
+                    { source: 'Client Referrals', count: 22, pct: 52 },
+                    { source: 'Bar Association', count: 8, pct: 19 },
+                    { source: 'Online / WukalaGPT', count: 7, pct: 17 },
+                    { source: 'Walk-in', count: 5, pct: 12 },
+                  ].map(s => (
+                    <div key={s.source}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-sans text-foreground">{s.source}</span>
+                        <span className="text-[10px] font-sans text-muted-foreground">{s.count} clients ({s.pct}%)</span>
+                      </div>
+                      <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full transition-all duration-700" style={{ width: `${s.pct}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* ═══ WORKLOAD HEATMAP ═══ */}
+        {activeTab === 'workload' && (
+          <motion.div key="workload" {...fadeIn} className="space-y-5">
+            {/* Heatmap */}
+            <Card className="border-border/50 shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold font-sans text-foreground">Workload Heatmap — Last 12 Weeks</h3>
+                  <div className="flex items-center gap-1 text-[8px] text-muted-foreground font-sans">
+                    <span>Less</span>
+                    {heatColors.map((c, i) => <div key={i} className={`h-3 w-3 rounded-sm ${c}`} />)}
+                    <span>More</span>
+                  </div>
+                </div>
+                <div className="flex gap-1">
+                  <div className="flex flex-col gap-1 mr-1">
+                    {dayLabels.map(d => <span key={d} className="text-[8px] text-muted-foreground font-sans h-4 flex items-center">{d}</span>)}
+                  </div>
+                  {heatmapData.map((week, wi) => (
+                    <div key={wi} className="flex flex-col gap-1 flex-1">
+                      {week.map((intensity, di) => (
+                        <div key={di} className={`h-4 rounded-sm ${heatColors[intensity]} transition-colors`} title={`Week ${wi + 1}, ${dayLabels[di]}: ${intensity} hearings`} />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Busiest Days */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <Card className="border-border/50 shadow-sm">
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Busiest Days</h3>
+                  <div className="space-y-2">
+                    {[
+                      { day: 'Thursday', avg: 4.2, hearings: 50 },
+                      { day: 'Wednesday', avg: 3.8, hearings: 46 },
+                      { day: 'Tuesday', avg: 3.1, hearings: 37 },
+                      { day: 'Monday', avg: 2.5, hearings: 30 },
+                      { day: 'Friday', avg: 2.0, hearings: 24 },
+                    ].map(d => (
+                      <div key={d.day} className="flex items-center gap-3">
+                        <span className="text-xs font-sans text-foreground w-24">{d.day}</span>
+                        <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
+                          <div className="h-full bg-gold rounded-full" style={{ width: `${(d.avg / 4.2) * 100}%` }} />
+                        </div>
+                        <span className="text-[10px] font-sans text-muted-foreground w-20 text-right">{d.avg} avg/wk</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-border/50 shadow-sm">
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-semibold font-sans text-foreground mb-3">Capacity Planning</h3>
+                  <div className="space-y-3">
+                    <div className="p-3 rounded-lg bg-success/10 border border-success/20">
+                      <p className="text-xs font-semibold font-sans text-success">Available Capacity</p>
+                      <p className="text-[10px] text-muted-foreground font-sans mt-0.5">You have ~6 hours free this week for new consultations</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-gold/10 border border-gold/20">
+                      <p className="text-xs font-semibold font-sans text-gold">Peak Month Alert</p>
+                      <p className="text-[10px] text-muted-foreground font-sans mt-0.5">March-April historically busiest — consider delegating to juniors</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                      <p className="text-xs font-semibold font-sans text-primary">Weekly Avg.</p>
+                      <p className="text-[10px] text-muted-foreground font-sans mt-0.5">15.6 hearings/week · 3.1 per day average</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            {casesByType.map(c => (
-              <div key={c.outcome} className="flex items-center justify-between text-xs font-sans">
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <div className={`h-2.5 w-2.5 rounded-full ${c.color}`} />
-                  {c.outcome}
-                </span>
-                <span className="font-medium text-foreground">{c.count} ({c.pct}%)</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Practice Area Drilldown */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold font-sans">Practice Area Performance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {practiceAreas.map(p => (
-              <div
-                key={p.area}
-                onClick={() => setSelectedArea(p)}
-                className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/20 cursor-pointer hover:bg-secondary/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-secondary flex items-center justify-center">
-                    <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium font-sans text-foreground">{p.area}</p>
-                    <p className="text-[11px] text-muted-foreground font-sans">{p.activeCases} active · {p.closedCases} closed · {p.winRate}% win</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-right">
-                    <p className="text-sm font-semibold font-sans text-foreground">{p.revenue}</p>
-                    <p className="text-[10px] text-success font-sans">{p.growth}</p>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-// ── Billing Tab ──
-function BillingTab() {
-  const totalBilled = billingTrends.reduce((s, b) => s + b.billed, 0);
-  const totalCollected = billingTrends.reduce((s, b) => s + b.collected, 0);
-  const collectionRate = ((totalCollected / totalBilled) * 100).toFixed(1);
-
-  return (
-    <div className="space-y-5">
-      {/* Billing Summary */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { label: 'Total Billed', value: `₨ ${(totalBilled / 1000000).toFixed(1)}M`, color: 'text-foreground' },
-          { label: 'Collected', value: `₨ ${(totalCollected / 1000000).toFixed(1)}M`, color: 'text-success' },
-          { label: 'Collection Rate', value: `${collectionRate}%`, color: 'text-primary' },
-        ].map(s => (
-          <Card key={s.label} className="border-border/50 shadow-sm">
-            <CardContent className="p-4 text-center">
-              <p className={`text-lg font-bold font-sans ${s.color}`}>{s.value}</p>
-              <p className="text-[10px] text-muted-foreground font-sans mt-0.5">{s.label}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Billing Trends Chart */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-primary" /> Billing vs Collection Trends
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-end gap-2 h-40">
-            {billingTrends.map(b => (
-              <div key={b.month} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-[8px] text-muted-foreground font-sans">{(b.billed / 1000000).toFixed(1)}M</span>
-                <div className="w-full flex gap-0.5">
-                  <div className="flex-1">
-                    <div className="w-full bg-primary/70 rounded-t-sm" style={{ height: `${(b.billed / maxBilling) * 110}px` }} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="w-full bg-success/60 rounded-t-sm" style={{ height: `${(b.collected / maxBilling) * 110}px` }} />
-                  </div>
-                </div>
-                <span className="text-[9px] text-muted-foreground font-sans">{b.month}</span>
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/30">
-            <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-sans">
-              <div className="h-2 w-2 rounded-full bg-primary/70" /> Billed
-            </span>
-            <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-sans">
-              <div className="h-2 w-2 rounded-full bg-success/60" /> Collected
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Outstanding by Month */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-gold" /> Outstanding Receivables
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {billingTrends.map(b => (
-            <div key={b.month} className="flex items-center justify-between p-2.5 rounded-lg bg-secondary/20 border border-border/10">
-              <span className="text-xs font-sans text-foreground font-medium">{b.month}</span>
-              <div className="flex items-center gap-3">
-                <div className="w-20 h-1.5 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-gold rounded-full" style={{ width: `${(b.outstanding / b.billed) * 100}%` }} />
-                </div>
-                <span className="text-xs font-sans text-muted-foreground w-16 text-right">₨ {(b.outstanding / 1000).toFixed(0)}K</span>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-// ── Team Tab ──
-function TeamTab() {
-  return (
-    <div className="space-y-5">
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" /> Team Performance
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {teamPerformance.map(t => (
-            <div key={t.name} className="p-3 rounded-lg bg-secondary/30 border border-border/20">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-xs font-bold font-sans text-primary">{t.name.split(' ').pop()?.[0]}</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium font-sans text-foreground">{t.name}</p>
-                    <p className="text-[10px] text-muted-foreground font-sans">{t.role}</p>
-                  </div>
-                </div>
-                <span className="text-sm font-semibold font-sans text-foreground">{t.revenue}</span>
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {[
-                  { label: 'Cases', value: t.cases },
-                  { label: 'Win Rate', value: `${t.winRate}%` },
-                  { label: 'Rating', value: `${t.satisfaction}/5` },
-                  { label: 'Hours', value: t.billableHrs },
-                ].map(s => (
-                  <div key={s.label} className="text-center">
-                    <p className="text-xs font-semibold font-sans text-foreground">{s.value}</p>
-                    <p className="text-[9px] text-muted-foreground font-sans">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-              {/* Billable hours bar */}
-              <div className="mt-2">
-                <div className="flex items-center justify-between text-[9px] text-muted-foreground font-sans mb-1">
-                  <span>Billable hours utilization</span>
-                  <span>{((t.billableHrs / 200) * 100).toFixed(0)}%</span>
-                </div>
-                <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-primary/70 rounded-full transition-all duration-500" style={{ width: `${(t.billableHrs / 200) * 100}%` }} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
