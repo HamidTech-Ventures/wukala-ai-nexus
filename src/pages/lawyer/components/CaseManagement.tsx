@@ -757,6 +757,110 @@ export default function CaseManagement() {
             )}
           </motion.div>
         </AnimatePresence>
+
+        {/* Edit Case Dialog */}
+        <Dialog open={showEditCase} onOpenChange={setShowEditCase}>
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Edit Case</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                Update case details. Changes will be saved via PATCH /api/cases/:id
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Case Title *</Label>
+                <Input value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} className="h-9 text-sm font-sans" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Case Number *</Label>
+                  <Input value={editForm.caseNumber} onChange={e => setEditForm(f => ({ ...f, caseNumber: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">FIR Number</Label>
+                  <Input value={editForm.firNumber} onChange={e => setEditForm(f => ({ ...f, firNumber: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Client Name *</Label>
+                <Input value={editForm.client} onChange={e => setEditForm(f => ({ ...f, client: e.target.value }))} className="h-9 text-sm font-sans" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Court *</Label>
+                  <Select value={editForm.court} onValueChange={v => setEditForm(f => ({ ...f, court: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {courtTypes.filter(c => c !== 'All Courts').map(c => (
+                        <SelectItem key={c} value={c} className="text-xs font-sans">{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Case Type *</Label>
+                  <Select value={editForm.type} onValueChange={v => setEditForm(f => ({ ...f, type: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {caseTypes.filter(t => t !== 'All Types').map(t => (
+                        <SelectItem key={t} value={t} className="text-xs font-sans">{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Status</Label>
+                  <Select value={editForm.status} onValueChange={v => setEditForm(f => ({ ...f, status: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {pipelineStages.map(s => (
+                        <SelectItem key={s.status} value={s.status} className="text-xs font-sans">{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Priority</Label>
+                  <Select value={editForm.priority} onValueChange={v => setEditForm(f => ({ ...f, priority: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {['Low', 'Medium', 'High', 'Critical'].map(p => (
+                        <SelectItem key={p} value={p} className="text-xs font-sans">{p}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Judge</Label>
+                  <Input value={editForm.judge} onChange={e => setEditForm(f => ({ ...f, judge: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Opposing Counsel</Label>
+                  <Input value={editForm.opposingCounsel} onChange={e => setEditForm(f => ({ ...f, opposingCounsel: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Next Hearing Date</Label>
+                <Input type="date" value={editForm.nextHearing} onChange={e => setEditForm(f => ({ ...f, nextHearing: e.target.value }))} className="h-9 text-sm font-sans" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Case Description</Label>
+                <Textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} className="text-sm font-sans min-h-[80px] resize-none" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => setShowEditCase(false)}>Cancel</Button>
+              <Button size="sm" className="bg-gradient-primary font-sans text-xs gap-1.5" onClick={handleSaveEdit}>
+                <CheckCircle2 className="h-3.5 w-3.5" /> Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </motion.div>
     );
   }
