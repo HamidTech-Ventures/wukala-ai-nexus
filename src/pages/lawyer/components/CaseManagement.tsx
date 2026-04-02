@@ -517,10 +517,10 @@ export default function CaseManagement() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <Button variant="outline" size="sm" className="text-xs font-sans h-8 gap-1.5 border-border/50">
+              <Button variant="outline" size="sm" className="text-xs font-sans h-8 gap-1.5 border-border/50" onClick={openEditDialog}>
                 <Edit className="h-3.5 w-3.5" /> Edit
               </Button>
-              <Button variant="outline" size="sm" className="text-xs font-sans h-8 gap-1.5 border-border/50">
+              <Button variant="outline" size="sm" className="text-xs font-sans h-8 gap-1.5 border-border/50" onClick={handleExportCase}>
                 <Download className="h-3.5 w-3.5" /> Export
               </Button>
             </div>
