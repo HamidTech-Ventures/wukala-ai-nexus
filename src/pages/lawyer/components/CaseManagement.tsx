@@ -352,11 +352,116 @@ export default function CaseManagement() {
   const [selectedCase, setSelectedCase] = useState<CaseFile | null>(null);
   const [detailTab, setDetailTab] = useState('timeline');
   const [showNewCase, setShowNewCase] = useState(false);
+  const [showEditCase, setShowEditCase] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filterCourt, setFilterCourt] = useState('All Courts');
   const [filterType, setFilterType] = useState('All Types');
   const [newNote, setNewNote] = useState('');
 
+  // Edit form state
+  const [editForm, setEditForm] = useState({
+    title: '', caseNumber: '', firNumber: '', client: '', court: '',
+    type: '', judge: '', opposingCounsel: '', priority: '', nextHearing: '',
+    description: '', status: '' as string,
+  });
+
+  const openEditDialog = () => {
+    if (!selectedCase) return;
+    setEditForm({
+      title: selectedCase.title,
+      caseNumber: selectedCase.caseNumber,
+      firNumber: selectedCase.firNumber || '',
+      client: selectedCase.client,
+      court: selectedCase.court,
+      type: selectedCase.type,
+      judge: selectedCase.judge,
+      opposingCounsel: selectedCase.opposingCounsel,
+      priority: selectedCase.priority,
+      nextHearing: selectedCase.nextHearing,
+      description: selectedCase.description,
+      status: selectedCase.status,
+    });
+    setShowEditCase(true);
+  };
+
+  const handleSaveEdit = () => {
+    // In production this calls PATCH /api/cases/:id
+    if (selectedCase) {
+      const updated: CaseFile = {
+        ...selectedCase,
+        title: editForm.title,
+        caseNumber: editForm.caseNumber,
+        firNumber: editForm.firNumber || undefined,
+        client: editForm.client,
+        court: editForm.court,
+        type: editForm.type,
+        judge: editForm.judge,
+        opposingCounsel: editForm.opposingCounsel,
+        priority: editForm.priority,
+        nextHearing: editForm.nextHearing,
+        description: editForm.description,
+        status: editForm.status as CaseStatus,
+      };
+      setSelectedCase(updated);
+    }
+    setShowEditCase(false);
+    toast.success('Case updated successfully', { description: 'Changes saved. In production this calls PATCH /api/cases/:id' });
+  };
+
+  const handleExportCase = () => {
+    if (!selectedCase) return;
+    // Generate a text-based case summary and download as file
+    const lines = [
+      `═══════════════════════════════════════════════════`,
+      `CASE EXPORT — ${selectedCase.id}`,
+      `Generated: ${new Date().toLocaleString()}`,
+      `═══════════════════════════════════════════════════`,
+      ``,
+      `CASE DETAILS`,
+      `─────────────────────────────────`,
+      `Title:            ${selectedCase.title}`,
+      `Case Number:      ${selectedCase.caseNumber}`,
+      selectedCase.firNumber ? `FIR Number:       ${selectedCase.firNumber}` : '',
+      `Client:           ${selectedCase.client}`,
+      `Court:            ${selectedCase.court}`,
+      `Judge:            ${selectedCase.judge}`,
+      `Opposing Counsel: ${selectedCase.opposingCounsel}`,
+      `Type:             ${selectedCase.type}`,
+      `Status:           ${selectedCase.status}`,
+      `Priority:         ${selectedCase.priority}`,
+      `Stage:            ${selectedCase.stage}`,
+      `Filed Date:       ${selectedCase.filedDate}`,
+      `Next Hearing:     ${selectedCase.nextHearing}`,
+      ``,
+      `CASE SUMMARY`,
+      `─────────────────────────────────`,
+      selectedCase.description,
+      ``,
+      `TIMELINE (${selectedCase.timeline.length} events)`,
+      `─────────────────────────────────`,
+      ...selectedCase.timeline.map(e => `[${e.date}] ${e.title}\n   ${e.description}`),
+      ``,
+      `DOCUMENTS (${selectedCase.documents.length} files)`,
+      `─────────────────────────────────`,
+      ...selectedCase.documents.map(d => `• ${d.name} (${d.size}) — ${d.confidential ? 'CONFIDENTIAL' : 'General'}`),
+      ``,
+      `INTERNAL NOTES (${selectedCase.notes.length})`,
+      `─────────────────────────────────`,
+      ...selectedCase.notes.map(n => `[${n.date} — ${n.author}]\n${n.content}\n`),
+      ``,
+      `═══════════════════════════════════════════════════`,
+      `END OF EXPORT`,
+    ].filter(Boolean).join('\n');
+
+    const blob = new Blob([lines], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selectedCase.id}_${selectedCase.title.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 40)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Case exported', { description: 'Case summary downloaded. In production this generates a PDF via Hangfire.' });
+  };
   const filteredCases = cases.filter(c => {
     const matchSearch =
       c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
