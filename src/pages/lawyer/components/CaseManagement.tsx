@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import {
   Search,
   Plus,
@@ -351,11 +352,116 @@ export default function CaseManagement() {
   const [selectedCase, setSelectedCase] = useState<CaseFile | null>(null);
   const [detailTab, setDetailTab] = useState('timeline');
   const [showNewCase, setShowNewCase] = useState(false);
+  const [showEditCase, setShowEditCase] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filterCourt, setFilterCourt] = useState('All Courts');
   const [filterType, setFilterType] = useState('All Types');
   const [newNote, setNewNote] = useState('');
 
+  // Edit form state
+  const [editForm, setEditForm] = useState({
+    title: '', caseNumber: '', firNumber: '', client: '', court: '',
+    type: '', judge: '', opposingCounsel: '', priority: '', nextHearing: '',
+    description: '', status: '' as string,
+  });
+
+  const openEditDialog = () => {
+    if (!selectedCase) return;
+    setEditForm({
+      title: selectedCase.title,
+      caseNumber: selectedCase.caseNumber,
+      firNumber: selectedCase.firNumber || '',
+      client: selectedCase.client,
+      court: selectedCase.court,
+      type: selectedCase.type,
+      judge: selectedCase.judge,
+      opposingCounsel: selectedCase.opposingCounsel,
+      priority: selectedCase.priority,
+      nextHearing: selectedCase.nextHearing,
+      description: selectedCase.description,
+      status: selectedCase.status,
+    });
+    setShowEditCase(true);
+  };
+
+  const handleSaveEdit = () => {
+    // In production this calls PATCH /api/cases/:id
+    if (selectedCase) {
+      const updated: CaseFile = {
+        ...selectedCase,
+        title: editForm.title,
+        caseNumber: editForm.caseNumber,
+        firNumber: editForm.firNumber || undefined,
+        client: editForm.client,
+        court: editForm.court,
+        type: editForm.type,
+        judge: editForm.judge,
+        opposingCounsel: editForm.opposingCounsel,
+        priority: editForm.priority,
+        nextHearing: editForm.nextHearing,
+        description: editForm.description,
+        status: editForm.status as CaseStatus,
+      };
+      setSelectedCase(updated);
+    }
+    setShowEditCase(false);
+    toast.success('Case updated successfully', { description: 'Changes saved. In production this calls PATCH /api/cases/:id' });
+  };
+
+  const handleExportCase = () => {
+    if (!selectedCase) return;
+    // Generate a text-based case summary and download as file
+    const lines = [
+      `═══════════════════════════════════════════════════`,
+      `CASE EXPORT — ${selectedCase.id}`,
+      `Generated: ${new Date().toLocaleString()}`,
+      `═══════════════════════════════════════════════════`,
+      ``,
+      `CASE DETAILS`,
+      `─────────────────────────────────`,
+      `Title:            ${selectedCase.title}`,
+      `Case Number:      ${selectedCase.caseNumber}`,
+      selectedCase.firNumber ? `FIR Number:       ${selectedCase.firNumber}` : '',
+      `Client:           ${selectedCase.client}`,
+      `Court:            ${selectedCase.court}`,
+      `Judge:            ${selectedCase.judge}`,
+      `Opposing Counsel: ${selectedCase.opposingCounsel}`,
+      `Type:             ${selectedCase.type}`,
+      `Status:           ${selectedCase.status}`,
+      `Priority:         ${selectedCase.priority}`,
+      `Stage:            ${selectedCase.stage}`,
+      `Filed Date:       ${selectedCase.filedDate}`,
+      `Next Hearing:     ${selectedCase.nextHearing}`,
+      ``,
+      `CASE SUMMARY`,
+      `─────────────────────────────────`,
+      selectedCase.description,
+      ``,
+      `TIMELINE (${selectedCase.timeline.length} events)`,
+      `─────────────────────────────────`,
+      ...selectedCase.timeline.map(e => `[${e.date}] ${e.title}\n   ${e.description}`),
+      ``,
+      `DOCUMENTS (${selectedCase.documents.length} files)`,
+      `─────────────────────────────────`,
+      ...selectedCase.documents.map(d => `• ${d.name} (${d.size}) — ${d.confidential ? 'CONFIDENTIAL' : 'General'}`),
+      ``,
+      `INTERNAL NOTES (${selectedCase.notes.length})`,
+      `─────────────────────────────────`,
+      ...selectedCase.notes.map(n => `[${n.date} — ${n.author}]\n${n.content}\n`),
+      ``,
+      `═══════════════════════════════════════════════════`,
+      `END OF EXPORT`,
+    ].filter(Boolean).join('\n');
+
+    const blob = new Blob([lines], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selectedCase.id}_${selectedCase.title.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 40)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Case exported', { description: 'Case summary downloaded. In production this generates a PDF via Hangfire.' });
+  };
   const filteredCases = cases.filter(c => {
     const matchSearch =
       c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -411,10 +517,10 @@ export default function CaseManagement() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <Button variant="outline" size="sm" className="text-xs font-sans h-8 gap-1.5 border-border/50">
+              <Button variant="outline" size="sm" className="text-xs font-sans h-8 gap-1.5 border-border/50" onClick={openEditDialog}>
                 <Edit className="h-3.5 w-3.5" /> Edit
               </Button>
-              <Button variant="outline" size="sm" className="text-xs font-sans h-8 gap-1.5 border-border/50">
+              <Button variant="outline" size="sm" className="text-xs font-sans h-8 gap-1.5 border-border/50" onClick={handleExportCase}>
                 <Download className="h-3.5 w-3.5" /> Export
               </Button>
             </div>
@@ -651,6 +757,110 @@ export default function CaseManagement() {
             )}
           </motion.div>
         </AnimatePresence>
+
+        {/* Edit Case Dialog */}
+        <Dialog open={showEditCase} onOpenChange={setShowEditCase}>
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Edit Case</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                Update case details. Changes will be saved via PATCH /api/cases/:id
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Case Title *</Label>
+                <Input value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} className="h-9 text-sm font-sans" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Case Number *</Label>
+                  <Input value={editForm.caseNumber} onChange={e => setEditForm(f => ({ ...f, caseNumber: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">FIR Number</Label>
+                  <Input value={editForm.firNumber} onChange={e => setEditForm(f => ({ ...f, firNumber: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Client Name *</Label>
+                <Input value={editForm.client} onChange={e => setEditForm(f => ({ ...f, client: e.target.value }))} className="h-9 text-sm font-sans" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Court *</Label>
+                  <Select value={editForm.court} onValueChange={v => setEditForm(f => ({ ...f, court: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {courtTypes.filter(c => c !== 'All Courts').map(c => (
+                        <SelectItem key={c} value={c} className="text-xs font-sans">{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Case Type *</Label>
+                  <Select value={editForm.type} onValueChange={v => setEditForm(f => ({ ...f, type: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {caseTypes.filter(t => t !== 'All Types').map(t => (
+                        <SelectItem key={t} value={t} className="text-xs font-sans">{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Status</Label>
+                  <Select value={editForm.status} onValueChange={v => setEditForm(f => ({ ...f, status: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {pipelineStages.map(s => (
+                        <SelectItem key={s.status} value={s.status} className="text-xs font-sans">{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Priority</Label>
+                  <Select value={editForm.priority} onValueChange={v => setEditForm(f => ({ ...f, priority: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {['Low', 'Medium', 'High', 'Critical'].map(p => (
+                        <SelectItem key={p} value={p} className="text-xs font-sans">{p}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Judge</Label>
+                  <Input value={editForm.judge} onChange={e => setEditForm(f => ({ ...f, judge: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Opposing Counsel</Label>
+                  <Input value={editForm.opposingCounsel} onChange={e => setEditForm(f => ({ ...f, opposingCounsel: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Next Hearing Date</Label>
+                <Input type="date" value={editForm.nextHearing} onChange={e => setEditForm(f => ({ ...f, nextHearing: e.target.value }))} className="h-9 text-sm font-sans" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Case Description</Label>
+                <Textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} className="text-sm font-sans min-h-[80px] resize-none" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => setShowEditCase(false)}>Cancel</Button>
+              <Button size="sm" className="bg-gradient-primary font-sans text-xs gap-1.5" onClick={handleSaveEdit}>
+                <CheckCircle2 className="h-3.5 w-3.5" /> Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </motion.div>
     );
   }
