@@ -229,11 +229,20 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
     });
   };
 
-  const renderMessageContent = (content: string) => {
-    // Check if content contains mermaid diagram
+  const renderMessageContent = (message: Message) => {
+    const { content, streaming, id } = message;
     const mermaidRegex = /```mermaid\n([\s\S]*?)\n```/g;
     const parts = content.split(mermaidRegex);
-    
+
+    // For streaming AI replies with no diagram, animate the reveal.
+    if (streaming && parts.length === 1) {
+      return (
+        <p className="text-xs lg:text-sm leading-relaxed break-words whitespace-pre-wrap">
+          <StreamingText text={content} speed={10} onDone={() => handleStreamDone(id)} />
+        </p>
+      );
+    }
+
     if (parts.length === 1) {
       return <p className="text-xs lg:text-sm leading-relaxed break-words whitespace-pre-wrap">{content}</p>;
     }
@@ -242,14 +251,16 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
       <div className="space-y-4">
         {parts.map((part, index) => {
           if (index % 2 === 0) {
-            // Regular text
             return part.trim() ? (
               <p key={index} className="text-xs lg:text-sm leading-relaxed break-words whitespace-pre-wrap">
-                {part.trim()}
+                {streaming && index === 0 ? (
+                  <StreamingText text={part.trim()} speed={10} onDone={() => handleStreamDone(id)} />
+                ) : (
+                  part.trim()
+                )}
               </p>
             ) : null;
           } else {
-            // Mermaid diagram
             return (
               <div key={index} className="my-4 p-4 bg-background/50 rounded-lg border border-border overflow-x-auto">
                 <pre className="text-xs mermaid">{part.trim()}</pre>
