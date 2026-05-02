@@ -27,6 +27,8 @@ import {
   X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ChatLogoLoader3D from '@/components/ChatLogoLoader3D';
+import StreamingText from '@/components/StreamingText';
 
 interface Message {
   id: string;
@@ -34,6 +36,7 @@ interface Message {
   sender: 'user' | 'ai';
   timestamp: Date;
   attachments?: File[];
+  streaming?: boolean;
 }
 
 interface ChatSession {
@@ -152,11 +155,13 @@ export default function ChatPage() {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response with diagram support
+    // Phase 1: "Thinking" — backend latency / first-token wait.
+    // The 3D logo loader is shown during this window.
+    // Phase 2: Once the first chunk arrives, the message bubble appears
+    // and StreamingText reveals text progressively.
     setTimeout(() => {
-      let aiContent = 'Thank you for your question. Based on Pakistani law, I can provide you with the following guidance...';
-      
-      // Check if user asked for flowchart or diagram
+      let aiContent = 'Thank you for your question. Based on Pakistani law, I can provide you with the following guidance. This is a placeholder response that will be replaced by the live response streamed from the backend. Each character you see appearing is rendered through the streaming pipeline, so swapping in real Server-Sent Events later requires no UI changes.';
+
       if (userInput.includes('flowchart') || userInput.includes('diagram')) {
         aiContent = `Here's a flowchart showing the legal process:
 
@@ -176,16 +181,23 @@ graph TD
 
 This diagram illustrates the typical legal proceeding workflow in Pakistani courts.`;
       }
-      
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         content: aiContent,
         sender: 'ai',
         timestamp: new Date(),
+        streaming: true,
       };
-      setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
-    }, 2000);
+      setMessages(prev => [...prev, aiResponse]);
+    }, 1800);
+  };
+
+  const handleStreamDone = (id: string) => {
+    setMessages(prev =>
+      prev.map(m => (m.id === id ? { ...m, streaming: false } : m))
+    );
   };
 
   const handleCopyMessage = (content: string) => {
@@ -217,11 +229,20 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
     });
   };
 
-  const renderMessageContent = (content: string) => {
-    // Check if content contains mermaid diagram
+  const renderMessageContent = (message: Message) => {
+    const { content, streaming, id } = message;
     const mermaidRegex = /```mermaid\n([\s\S]*?)\n```/g;
     const parts = content.split(mermaidRegex);
-    
+
+    // For streaming AI replies with no diagram, animate the reveal.
+    if (streaming && parts.length === 1) {
+      return (
+        <p className="text-xs lg:text-sm leading-relaxed break-words whitespace-pre-wrap">
+          <StreamingText text={content} speed={10} onDone={() => handleStreamDone(id)} />
+        </p>
+      );
+    }
+
     if (parts.length === 1) {
       return <p className="text-xs lg:text-sm leading-relaxed break-words whitespace-pre-wrap">{content}</p>;
     }
@@ -230,14 +251,16 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
       <div className="space-y-4">
         {parts.map((part, index) => {
           if (index % 2 === 0) {
-            // Regular text
             return part.trim() ? (
               <p key={index} className="text-xs lg:text-sm leading-relaxed break-words whitespace-pre-wrap">
-                {part.trim()}
+                {streaming && index === 0 ? (
+                  <StreamingText text={part.trim()} speed={10} onDone={() => handleStreamDone(id)} />
+                ) : (
+                  part.trim()
+                )}
               </p>
             ) : null;
           } else {
-            // Mermaid diagram
             return (
               <div key={index} className="my-4 p-4 bg-background/50 rounded-lg border border-border overflow-x-auto">
                 <pre className="text-xs mermaid">{part.trim()}</pre>
@@ -497,7 +520,7 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
                       ? 'chat-bubble-user' 
                       : 'chat-bubble-ai'
                   )}>
-                    {renderMessageContent(message.content)}
+                    {renderMessageContent(message)}
                     <p className={cn(
                       'text-[10px] lg:text-xs mt-1 lg:mt-2 opacity-70',
                       message.sender === 'user' ? 'text-primary-foreground' : 'text-muted-foreground'
@@ -551,21 +574,10 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
               </div>
             ))}
             
-            {/* Typing Indicator */}
+            {/* 3D Logo Loader — shown while waiting for the first response chunk */}
             {isTyping && (
-              <div className="flex items-start space-x-2 lg:space-x-3 animate-fade-in">
-                <div className="flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center rounded-full bg-muted">
-                  <Bot className="h-3 w-3 lg:h-4 lg:w-4" />
-                </div>
-                <div className="flex-1 max-w-[85%] lg:max-w-lg">
-                  <div className="chat-bubble-ai">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-current rounded-full animate-typing"></div>
-                      <div className="w-2 h-2 bg-current rounded-full animate-typing" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-current rounded-full animate-typing" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
-                  </div>
-                </div>
+              <div className="flex justify-center py-4 animate-fade-in">
+                <ChatLogoLoader3D label="Wukala-GPT is thinking…" size={220} />
               </div>
             )}
             
