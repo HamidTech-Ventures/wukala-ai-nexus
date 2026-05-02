@@ -520,7 +520,7 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
                       ? 'chat-bubble-user' 
                       : 'chat-bubble-ai'
                   )}>
-                    {renderMessageContent(message.content)}
+                    {renderMessageContent(message)}
                     <p className={cn(
                       'text-[10px] lg:text-xs mt-1 lg:mt-2 opacity-70',
                       message.sender === 'user' ? 'text-primary-foreground' : 'text-muted-foreground'
