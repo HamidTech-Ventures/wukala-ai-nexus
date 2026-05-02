@@ -27,6 +27,8 @@ import {
   X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ChatLogoLoader3D from '@/components/ChatLogoLoader3D';
+import StreamingText from '@/components/StreamingText';
 
 interface Message {
   id: string;
@@ -34,6 +36,7 @@ interface Message {
   sender: 'user' | 'ai';
   timestamp: Date;
   attachments?: File[];
+  streaming?: boolean;
 }
 
 interface ChatSession {
