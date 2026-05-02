@@ -155,11 +155,13 @@ export default function ChatPage() {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response with diagram support
+    // Phase 1: "Thinking" — backend latency / first-token wait.
+    // The 3D logo loader is shown during this window.
+    // Phase 2: Once the first chunk arrives, the message bubble appears
+    // and StreamingText reveals text progressively.
     setTimeout(() => {
-      let aiContent = 'Thank you for your question. Based on Pakistani law, I can provide you with the following guidance...';
-      
-      // Check if user asked for flowchart or diagram
+      let aiContent = 'Thank you for your question. Based on Pakistani law, I can provide you with the following guidance. This is a placeholder response that will be replaced by the live response streamed from the backend. Each character you see appearing is rendered through the streaming pipeline, so swapping in real Server-Sent Events later requires no UI changes.';
+
       if (userInput.includes('flowchart') || userInput.includes('diagram')) {
         aiContent = `Here's a flowchart showing the legal process:
 
@@ -179,16 +181,23 @@ graph TD
 
 This diagram illustrates the typical legal proceeding workflow in Pakistani courts.`;
       }
-      
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         content: aiContent,
         sender: 'ai',
         timestamp: new Date(),
+        streaming: true,
       };
-      setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
-    }, 2000);
+      setMessages(prev => [...prev, aiResponse]);
+    }, 1800);
+  };
+
+  const handleStreamDone = (id: string) => {
+    setMessages(prev =>
+      prev.map(m => (m.id === id ? { ...m, streaming: false } : m))
+    );
   };
 
   const handleCopyMessage = (content: string) => {
