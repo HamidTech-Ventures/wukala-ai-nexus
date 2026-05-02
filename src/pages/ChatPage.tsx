@@ -574,21 +574,10 @@ This diagram illustrates the typical legal proceeding workflow in Pakistani cour
               </div>
             ))}
             
-            {/* Typing Indicator */}
+            {/* 3D Logo Loader — shown while waiting for the first response chunk */}
             {isTyping && (
-              <div className="flex items-start space-x-2 lg:space-x-3 animate-fade-in">
-                <div className="flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center rounded-full bg-muted">
-                  <Bot className="h-3 w-3 lg:h-4 lg:w-4" />
-                </div>
-                <div className="flex-1 max-w-[85%] lg:max-w-lg">
-                  <div className="chat-bubble-ai">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-current rounded-full animate-typing"></div>
-                      <div className="w-2 h-2 bg-current rounded-full animate-typing" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-current rounded-full animate-typing" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
-                  </div>
-                </div>
+              <div className="flex justify-center py-4 animate-fade-in">
+                <ChatLogoLoader3D label="Wukala-GPT is thinking…" size={220} />
               </div>
             )}
             
