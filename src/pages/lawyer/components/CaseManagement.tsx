@@ -346,6 +346,18 @@ const courtTypes = ['All Courts', 'Lahore High Court', 'Sessions Court', 'Civil 
 const caseTypes = ['All Types', 'Tax', 'Criminal', 'Civil', 'Property', 'Banking', 'Labour', 'Corporate'];
 
 // ─── Component ──────────────────────────────────────────────────────
+// ─── Status Transition Rules (enforced server-side too) ────────────
+const allowedTransitions: Record<CaseStatus, CaseStatus[]> = {
+  Filed:       ['Active', 'Decided'],
+  Active:      ['Heard', 'Reserved', 'Decided', 'Negotiation', 'Discovery'],
+  Discovery:   ['Active', 'Negotiation', 'Decided'],
+  Negotiation: ['Active', 'Decided'],
+  Heard:       ['Reserved', 'Decided', 'Active'],
+  Reserved:    ['Decided'],
+  Decided:     ['Appeal'],
+  Appeal:      ['Decided'],
+};
+
 export default function CaseManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
@@ -357,6 +369,28 @@ export default function CaseManagement() {
   const [filterCourt, setFilterCourt] = useState('All Courts');
   const [filterType, setFilterType] = useState('All Types');
   const [newNote, setNewNote] = useState('');
+
+  // Add Event dialog
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [eventForm, setEventForm] = useState({
+    type: 'note' as TimelineEvent['type'],
+    date: new Date().toISOString().slice(0, 10),
+    title: '',
+    description: '',
+  });
+
+  // Link Case dialog
+  const [showLinkCase, setShowLinkCase] = useState(false);
+  const [linkSearch, setLinkSearch] = useState('');
+  const [linkRelationship, setLinkRelationship] = useState('related');
+
+  // Schedule Hearing dialog
+  const [showScheduleHearing, setShowScheduleHearing] = useState(false);
+  const [hearingForm, setHearingForm] = useState({ date: '', time: '10:00', purpose: '' });
+
+  // Status change confirmation
+  const [pendingStatus, setPendingStatus] = useState<CaseStatus | null>(null);
+  const [statusChangeReason, setStatusChangeReason] = useState('');
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -407,6 +441,114 @@ export default function CaseManagement() {
     setShowEditCase(false);
     toast.success('Case updated successfully', { description: 'Changes saved. In production this calls PATCH /api/cases/:id' });
   };
+
+  // ─── Add Timeline Event ──────────────────────────────────────
+  const handleAddEvent = () => {
+    if (!selectedCase || !eventForm.title.trim()) return;
+    const newEvent: TimelineEvent = {
+      id: Date.now(),
+      date: eventForm.date,
+      title: eventForm.title.trim(),
+      description: eventForm.description.trim(),
+      type: eventForm.type,
+    };
+    const updated = { ...selectedCase, timeline: [newEvent, ...selectedCase.timeline] };
+    setSelectedCase(updated);
+    setShowAddEvent(false);
+    setEventForm({ type: 'note', date: new Date().toISOString().slice(0, 10), title: '', description: '' });
+    toast.success('Timeline event added', {
+      description: 'POST /api/cases/' + selectedCase.id + '/timeline',
+    });
+  };
+
+  // ─── Link Case ──────────────────────────────────────────────
+  const handleLinkCase = (linkedId: string) => {
+    if (!selectedCase) return;
+    if (selectedCase.linkedCases.includes(linkedId)) {
+      toast.error('Case already linked');
+      return;
+    }
+    const linked = cases.find(c => c.id === linkedId);
+    const updated = {
+      ...selectedCase,
+      linkedCases: [...selectedCase.linkedCases, linkedId],
+      timeline: [
+        { id: Date.now(), date: new Date().toISOString().slice(0, 10),
+          title: `Linked to ${linked?.id} (${linkRelationship})`,
+          description: linked?.title || '', type: 'note' as const },
+        ...selectedCase.timeline,
+      ],
+    };
+    setSelectedCase(updated);
+    setShowLinkCase(false);
+    setLinkSearch('');
+    toast.success('Case linked', { description: 'POST /api/cases/' + selectedCase.id + '/links' });
+  };
+
+  const handleUnlinkCase = (linkedId: string) => {
+    if (!selectedCase) return;
+    setSelectedCase({ ...selectedCase, linkedCases: selectedCase.linkedCases.filter(id => id !== linkedId) });
+    toast.success('Case unlinked', { description: 'DELETE /api/cases/' + selectedCase.id + '/links/' + linkedId });
+  };
+
+  // ─── Schedule Hearing (writes back to cases.next_hearing) ───
+  const handleScheduleHearing = () => {
+    if (!selectedCase || !hearingForm.date) return;
+    const scheduledAt = `${hearingForm.date}T${hearingForm.time}`;
+    const updated = {
+      ...selectedCase,
+      nextHearing: hearingForm.date,
+      timeline: [
+        { id: Date.now(), date: hearingForm.date,
+          title: `Hearing scheduled — ${hearingForm.purpose || 'Court appearance'}`,
+          description: `Scheduled for ${hearingForm.date} at ${hearingForm.time}. Auto-updates case.next_hearing_date.`,
+          type: 'hearing' as const },
+        ...selectedCase.timeline,
+      ],
+    };
+    setSelectedCase(updated);
+    setShowScheduleHearing(false);
+    setHearingForm({ date: '', time: '10:00', purpose: '' });
+    toast.success('Hearing scheduled', {
+      description: 'POST /api/hearings — case.next_hearing_date auto-updated via trigger',
+    });
+  };
+
+  // ─── Pipeline stage change with validation ──────────────────
+  const handleStageClick = (newStatus: CaseStatus) => {
+    if (!selectedCase || newStatus === selectedCase.status) return;
+    const allowed = allowedTransitions[selectedCase.status] || [];
+    if (!allowed.includes(newStatus)) {
+      toast.error('Invalid transition', {
+        description: `Cannot move from ${selectedCase.status} → ${newStatus}. Allowed: ${allowed.join(', ') || 'none'}`,
+      });
+      return;
+    }
+    setPendingStatus(newStatus);
+  };
+
+  const confirmStatusChange = () => {
+    if (!selectedCase || !pendingStatus) return;
+    const oldStatus = selectedCase.status;
+    const updated = {
+      ...selectedCase,
+      status: pendingStatus,
+      timeline: [
+        { id: Date.now(), date: new Date().toISOString().slice(0, 10),
+          title: `Status changed: ${oldStatus} → ${pendingStatus}`,
+          description: statusChangeReason || 'Manual stage update from pipeline',
+          type: 'order' as const },
+        ...selectedCase.timeline,
+      ],
+    };
+    setSelectedCase(updated);
+    toast.success(`Moved to ${pendingStatus}`, {
+      description: 'PATCH /api/cases/' + selectedCase.id + '/status',
+    });
+    setPendingStatus(null);
+    setStatusChangeReason('');
+  };
+
 
   const handleExportCase = () => {
     if (!selectedCase) return;
@@ -527,34 +669,38 @@ export default function CaseManagement() {
           </div>
         </div>
 
-        {/* Status Pipeline */}
+        {/* Status Pipeline — clickable to change status */}
         <Card className="border-border/50 shadow-sm">
           <CardContent className="p-4">
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 font-sans">Case Pipeline</p>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider font-sans">Case Pipeline</p>
+              <p className="text-[10px] text-muted-foreground font-sans">Click a stage to advance</p>
+            </div>
             <div className="flex items-center gap-1 overflow-x-auto pb-1">
               {pipelineStages.map((stage, i) => {
                 const isActive = i === currentStageIndex;
                 const isPast = i < currentStageIndex;
+                const allowed = allowedTransitions[selectedCase.status]?.includes(stage.status);
+                const clickable = !isActive && (isPast || allowed);
                 return (
                   <div key={stage.label} className="flex items-center shrink-0">
-                    <div
+                    <button
+                      onClick={() => handleStageClick(stage.status)}
+                      disabled={isActive}
+                      title={!clickable && !isActive ? `Cannot transition from ${selectedCase.status} → ${stage.status}` : ''}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-sans font-medium transition-all ${
                         isActive
-                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          ? 'bg-primary text-primary-foreground shadow-sm cursor-default'
                           : isPast
-                            ? 'bg-success/10 text-success'
-                            : 'bg-secondary text-muted-foreground'
+                            ? 'bg-success/10 text-success hover:bg-success/20 cursor-pointer'
+                            : clickable
+                              ? 'bg-secondary text-muted-foreground hover:bg-primary/10 hover:text-primary cursor-pointer'
+                              : 'bg-secondary/50 text-muted-foreground/40 cursor-not-allowed'
                       }`}
                     >
-                      {isPast ? (
-                        <CheckCircle2 className="h-3 w-3" />
-                      ) : isActive ? (
-                        <CircleDot className="h-3 w-3" />
-                      ) : (
-                        <Circle className="h-3 w-3" />
-                      )}
+                      {isPast ? <CheckCircle2 className="h-3 w-3" /> : isActive ? <CircleDot className="h-3 w-3" /> : <Circle className="h-3 w-3" />}
                       {stage.label}
-                    </div>
+                    </button>
                     {i < pipelineStages.length - 1 && (
                       <ChevronRight className={`h-3.5 w-3.5 mx-0.5 shrink-0 ${isPast ? 'text-success/50' : 'text-border'}`} />
                     )}
@@ -568,16 +714,26 @@ export default function CaseManagement() {
         {/* Case Info Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { label: 'Judge', value: selectedCase.judge, icon: Gavel },
-            { label: 'Opposing Counsel', value: selectedCase.opposingCounsel, icon: User },
-            { label: 'Next Hearing', value: selectedCase.nextHearing, icon: Calendar },
-            { label: 'Filed Date', value: selectedCase.filedDate, icon: Clock },
+            { label: 'Judge', value: selectedCase.judge, icon: Gavel, action: null },
+            { label: 'Opposing Counsel', value: selectedCase.opposingCounsel, icon: User, action: null },
+            { label: 'Next Hearing', value: selectedCase.nextHearing, icon: Calendar, action: 'hearing' as const },
+            { label: 'Filed Date', value: selectedCase.filedDate, icon: Clock, action: null },
           ].map(item => (
             <Card key={item.label} className="border-border/50 shadow-sm">
               <CardContent className="p-3">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <item.icon className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-wider">{item.label}</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <item.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-wider">{item.label}</span>
+                  </div>
+                  {item.action === 'hearing' && (
+                    <button
+                      onClick={() => setShowScheduleHearing(true)}
+                      className="text-[9px] text-primary hover:underline font-sans font-medium"
+                    >
+                      Schedule
+                    </button>
+                  )}
                 </div>
                 <p className="text-xs font-medium font-sans text-foreground leading-snug">{item.value}</p>
               </CardContent>
@@ -593,35 +749,44 @@ export default function CaseManagement() {
           </CardContent>
         </Card>
 
-        {/* Linked Cases */}
-        {selectedCase.linkedCases.length > 0 && (
-          <Card className="border-border/50 shadow-sm">
-            <CardContent className="p-4">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 font-sans flex items-center gap-1.5">
-                <Link2 className="h-3.5 w-3.5" /> Linked Cases
+        {/* Linked Cases — always visible with Link button */}
+        <Card className="border-border/50 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider font-sans flex items-center gap-1.5">
+                <Link2 className="h-3.5 w-3.5" /> Linked Cases ({selectedCase.linkedCases.length})
               </p>
+              <Button variant="outline" size="sm" className="h-7 text-[10px] font-sans gap-1" onClick={() => setShowLinkCase(true)}>
+                <Plus className="h-3 w-3" /> Link Case
+              </Button>
+            </div>
+            {selectedCase.linkedCases.length === 0 ? (
+              <p className="text-[11px] text-muted-foreground font-sans italic">No linked cases. Link related, parent, appeal or cross-suit cases.</p>
+            ) : (
               <div className="flex flex-wrap gap-2">
                 {selectedCase.linkedCases.map(linkedId => {
                   const linked = cases.find(c => c.id === linkedId);
                   if (!linked) return null;
                   return (
-                    <button
-                      key={linkedId}
-                      onClick={() => { setSelectedCase(linked); setDetailTab('timeline'); }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all text-left"
-                    >
-                      <GitBranch className="h-3.5 w-3.5 text-primary" />
-                      <div>
-                        <p className="text-xs font-medium font-sans text-foreground">{linked.title}</p>
-                        <p className="text-[10px] text-muted-foreground font-sans">{linked.id} · {linked.court}</p>
-                      </div>
-                    </button>
+                    <div key={linkedId} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all">
+                      <button onClick={() => { setSelectedCase(linked); setDetailTab('timeline'); }} className="flex items-center gap-2 text-left">
+                        <GitBranch className="h-3.5 w-3.5 text-primary" />
+                        <div>
+                          <p className="text-xs font-medium font-sans text-foreground">{linked.title}</p>
+                          <p className="text-[10px] text-muted-foreground font-sans">{linked.id} · {linked.court}</p>
+                        </div>
+                      </button>
+                      <button onClick={() => handleUnlinkCase(linkedId)} className="ml-2 text-muted-foreground hover:text-destructive">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
                   );
                 })}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
+
 
         {/* Detail Tabs */}
         <Tabs value={detailTab} onValueChange={setDetailTab}>
@@ -649,29 +814,37 @@ export default function CaseManagement() {
           >
             {/* Timeline */}
             {detailTab === 'timeline' && (
-              <div className="relative">
-                <div className="absolute left-[19px] top-2 bottom-2 w-px bg-border" />
-                <div className="space-y-0">
-                  {selectedCase.timeline.map((event, i) => {
-                    const Icon = timelineIcon[event.type] || Clock;
-                    return (
-                      <div key={event.id} className="relative flex gap-4 pb-5">
-                        <div className={`relative z-10 h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${timelineColor[event.type]}`}>
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="pt-1 min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="text-sm font-medium font-sans text-foreground">{event.title}</p>
-                            <span className="text-[10px] text-muted-foreground font-sans whitespace-nowrap">{event.date}</span>
+              <div className="space-y-3">
+                <div className="flex justify-end">
+                  <Button size="sm" className="bg-gradient-primary text-xs font-sans gap-1.5 h-8" onClick={() => setShowAddEvent(true)}>
+                    <Plus className="h-3.5 w-3.5" /> Add Event
+                  </Button>
+                </div>
+                <div className="relative">
+                  <div className="absolute left-[19px] top-2 bottom-2 w-px bg-border" />
+                  <div className="space-y-0">
+                    {selectedCase.timeline.map((event) => {
+                      const Icon = timelineIcon[event.type] || Clock;
+                      return (
+                        <div key={event.id} className="relative flex gap-4 pb-5">
+                          <div className={`relative z-10 h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${timelineColor[event.type]}`}>
+                            <Icon className="h-4 w-4" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground font-sans mt-0.5 leading-relaxed">{event.description}</p>
+                          <div className="pt-1 min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="text-sm font-medium font-sans text-foreground">{event.title}</p>
+                              <span className="text-[10px] text-muted-foreground font-sans whitespace-nowrap">{event.date}</span>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground font-sans mt-0.5 leading-relaxed">{event.description}</p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}
+
 
             {/* Documents */}
             {detailTab === 'documents' && (
@@ -846,8 +1019,15 @@ export default function CaseManagement() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-sans">Next Hearing Date</Label>
-                <Input type="date" value={editForm.nextHearing} onChange={e => setEditForm(f => ({ ...f, nextHearing: e.target.value }))} className="h-9 text-sm font-sans" />
+                <div className="flex items-center justify-between gap-2 h-9 px-3 rounded-md bg-secondary/40 border border-border/50">
+                  <span className="text-xs font-sans text-foreground">{selectedCase.nextHearing || 'Not scheduled'}</span>
+                  <Button type="button" variant="ghost" size="sm" className="h-7 text-[10px] font-sans text-primary" onClick={() => { setShowEditCase(false); setShowScheduleHearing(true); }}>
+                    <Calendar className="h-3 w-3 mr-1" /> Schedule
+                  </Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground font-sans">Auto-derived from Hearing Calendar. Edit by scheduling a new hearing.</p>
               </div>
+
               <div className="space-y-1.5">
                 <Label className="text-xs font-sans">Case Description</Label>
                 <Textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} className="text-sm font-sans min-h-[80px] resize-none" />
@@ -861,9 +1041,175 @@ export default function CaseManagement() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Add Timeline Event Dialog */}
+        <Dialog open={showAddEvent} onOpenChange={setShowAddEvent}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Add Timeline Event</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                POST /api/cases/{selectedCase.id}/timeline
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Event Type *</Label>
+                  <Select value={eventForm.type} onValueChange={(v: TimelineEvent['type']) => setEventForm(f => ({ ...f, type: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="hearing" className="text-xs font-sans">Hearing</SelectItem>
+                      <SelectItem value="order" className="text-xs font-sans">Court Order</SelectItem>
+                      <SelectItem value="filing" className="text-xs font-sans">Filing</SelectItem>
+                      <SelectItem value="adjournment" className="text-xs font-sans">Adjournment</SelectItem>
+                      <SelectItem value="document" className="text-xs font-sans">Document</SelectItem>
+                      <SelectItem value="note" className="text-xs font-sans">Note</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Date *</Label>
+                  <Input type="date" value={eventForm.date} onChange={e => setEventForm(f => ({ ...f, date: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Title *</Label>
+                <Input value={eventForm.title} onChange={e => setEventForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Counter-affidavit filed" className="h-9 text-sm font-sans" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Description</Label>
+                <Textarea value={eventForm.description} onChange={e => setEventForm(f => ({ ...f, description: e.target.value }))} placeholder="Brief details about this event..." className="text-sm font-sans min-h-[80px] resize-none" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => setShowAddEvent(false)}>Cancel</Button>
+              <Button size="sm" className="bg-gradient-primary font-sans text-xs gap-1.5" disabled={!eventForm.title.trim()} onClick={handleAddEvent}>
+                <Plus className="h-3.5 w-3.5" /> Add Event
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Link Case Dialog */}
+        <Dialog open={showLinkCase} onOpenChange={setShowLinkCase}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Link Related Case</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                POST /api/cases/{selectedCase.id}/links
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Relationship</Label>
+                <Select value={linkRelationship} onValueChange={setLinkRelationship}>
+                  <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="related" className="text-xs font-sans">Related</SelectItem>
+                    <SelectItem value="parent" className="text-xs font-sans">Parent Case</SelectItem>
+                    <SelectItem value="child" className="text-xs font-sans">Child Case</SelectItem>
+                    <SelectItem value="appeal_of" className="text-xs font-sans">Appeal Of</SelectItem>
+                    <SelectItem value="consolidated_with" className="text-xs font-sans">Consolidated With</SelectItem>
+                    <SelectItem value="cross_suit" className="text-xs font-sans">Cross-Suit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Search Cases</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input value={linkSearch} onChange={e => setLinkSearch(e.target.value)} placeholder="Title, ID, client..." className="pl-9 h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="max-h-[280px] overflow-y-auto space-y-1.5 border border-border/40 rounded-md p-2">
+                {cases.filter(c =>
+                  c.id !== selectedCase.id &&
+                  !selectedCase.linkedCases.includes(c.id) &&
+                  (linkSearch === '' ||
+                    c.title.toLowerCase().includes(linkSearch.toLowerCase()) ||
+                    c.id.toLowerCase().includes(linkSearch.toLowerCase()) ||
+                    c.client.toLowerCase().includes(linkSearch.toLowerCase()))
+                ).map(c => (
+                  <button key={c.id} onClick={() => handleLinkCase(c.id)} className="w-full text-left p-2 rounded hover:bg-primary/5 border border-transparent hover:border-primary/20 transition-all">
+                    <p className="text-xs font-medium font-sans text-foreground">{c.title}</p>
+                    <p className="text-[10px] text-muted-foreground font-sans">{c.id} · {c.client} · {c.court}</p>
+                  </button>
+                ))}
+                {cases.filter(c => c.id !== selectedCase.id && !selectedCase.linkedCases.includes(c.id)).length === 0 && (
+                  <p className="text-[11px] text-muted-foreground font-sans text-center py-4">No more cases to link</p>
+                )}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => setShowLinkCase(false)}>Cancel</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Schedule Hearing Dialog */}
+        <Dialog open={showScheduleHearing} onOpenChange={setShowScheduleHearing}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Schedule Next Hearing</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                POST /api/hearings — updates case.next_hearing_date automatically
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Date *</Label>
+                  <Input type="date" value={hearingForm.date} onChange={e => setHearingForm(f => ({ ...f, date: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Time</Label>
+                  <Input type="time" value={hearingForm.time} onChange={e => setHearingForm(f => ({ ...f, time: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Purpose</Label>
+                <Input value={hearingForm.purpose} onChange={e => setHearingForm(f => ({ ...f, purpose: e.target.value }))} placeholder="e.g. Final arguments, Evidence" className="h-9 text-sm font-sans" />
+              </div>
+              <p className="text-[10px] text-muted-foreground font-sans bg-secondary/40 p-2 rounded">
+                Court: <span className="font-medium text-foreground">{selectedCase.court}</span> · Judge: <span className="font-medium text-foreground">{selectedCase.judge}</span>
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => setShowScheduleHearing(false)}>Cancel</Button>
+              <Button size="sm" className="bg-gradient-primary font-sans text-xs gap-1.5" disabled={!hearingForm.date} onClick={handleScheduleHearing}>
+                <Calendar className="h-3.5 w-3.5" /> Schedule
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Confirm Status Change Dialog */}
+        <Dialog open={!!pendingStatus} onOpenChange={(o) => { if (!o) { setPendingStatus(null); setStatusChangeReason(''); } }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Change Case Status?</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                Move from <Badge variant="outline" className="text-[10px] mx-1">{selectedCase.status}</Badge>
+                → <Badge variant="outline" className="text-[10px] mx-1 bg-primary/10 text-primary border-primary/20">{pendingStatus}</Badge>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 py-2">
+              <Label className="text-xs font-sans">Reason / Note (optional)</Label>
+              <Textarea value={statusChangeReason} onChange={e => setStatusChangeReason(e.target.value)} placeholder="e.g. Arguments completed, judgment reserved" className="text-sm font-sans min-h-[70px] resize-none" />
+              <p className="text-[10px] text-muted-foreground font-sans">A timeline event will be auto-created.</p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => { setPendingStatus(null); setStatusChangeReason(''); }}>Cancel</Button>
+              <Button size="sm" className="bg-gradient-primary font-sans text-xs gap-1.5" onClick={confirmStatusChange}>
+                <CheckCircle2 className="h-3.5 w-3.5" /> Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </motion.div>
     );
   }
+
 
   // ─── Case List View ────────────────────────────────────────────
   return (
