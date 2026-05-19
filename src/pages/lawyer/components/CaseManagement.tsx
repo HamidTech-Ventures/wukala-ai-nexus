@@ -1019,8 +1019,15 @@ export default function CaseManagement() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-sans">Next Hearing Date</Label>
-                <Input type="date" value={editForm.nextHearing} onChange={e => setEditForm(f => ({ ...f, nextHearing: e.target.value }))} className="h-9 text-sm font-sans" />
+                <div className="flex items-center justify-between gap-2 h-9 px-3 rounded-md bg-secondary/40 border border-border/50">
+                  <span className="text-xs font-sans text-foreground">{selectedCase.nextHearing || 'Not scheduled'}</span>
+                  <Button type="button" variant="ghost" size="sm" className="h-7 text-[10px] font-sans text-primary" onClick={() => { setShowEditCase(false); setShowScheduleHearing(true); }}>
+                    <Calendar className="h-3 w-3 mr-1" /> Schedule
+                  </Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground font-sans">Auto-derived from Hearing Calendar. Edit by scheduling a new hearing.</p>
               </div>
+
               <div className="space-y-1.5">
                 <Label className="text-xs font-sans">Case Description</Label>
                 <Textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} className="text-sm font-sans min-h-[80px] resize-none" />
