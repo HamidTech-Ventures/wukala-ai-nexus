@@ -1041,9 +1041,175 @@ export default function CaseManagement() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Add Timeline Event Dialog */}
+        <Dialog open={showAddEvent} onOpenChange={setShowAddEvent}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Add Timeline Event</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                POST /api/cases/{selectedCase.id}/timeline
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Event Type *</Label>
+                  <Select value={eventForm.type} onValueChange={(v: TimelineEvent['type']) => setEventForm(f => ({ ...f, type: v }))}>
+                    <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="hearing" className="text-xs font-sans">Hearing</SelectItem>
+                      <SelectItem value="order" className="text-xs font-sans">Court Order</SelectItem>
+                      <SelectItem value="filing" className="text-xs font-sans">Filing</SelectItem>
+                      <SelectItem value="adjournment" className="text-xs font-sans">Adjournment</SelectItem>
+                      <SelectItem value="document" className="text-xs font-sans">Document</SelectItem>
+                      <SelectItem value="note" className="text-xs font-sans">Note</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Date *</Label>
+                  <Input type="date" value={eventForm.date} onChange={e => setEventForm(f => ({ ...f, date: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Title *</Label>
+                <Input value={eventForm.title} onChange={e => setEventForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Counter-affidavit filed" className="h-9 text-sm font-sans" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Description</Label>
+                <Textarea value={eventForm.description} onChange={e => setEventForm(f => ({ ...f, description: e.target.value }))} placeholder="Brief details about this event..." className="text-sm font-sans min-h-[80px] resize-none" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => setShowAddEvent(false)}>Cancel</Button>
+              <Button size="sm" className="bg-gradient-primary font-sans text-xs gap-1.5" disabled={!eventForm.title.trim()} onClick={handleAddEvent}>
+                <Plus className="h-3.5 w-3.5" /> Add Event
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Link Case Dialog */}
+        <Dialog open={showLinkCase} onOpenChange={setShowLinkCase}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Link Related Case</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                POST /api/cases/{selectedCase.id}/links
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Relationship</Label>
+                <Select value={linkRelationship} onValueChange={setLinkRelationship}>
+                  <SelectTrigger className="h-9 text-xs font-sans"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="related" className="text-xs font-sans">Related</SelectItem>
+                    <SelectItem value="parent" className="text-xs font-sans">Parent Case</SelectItem>
+                    <SelectItem value="child" className="text-xs font-sans">Child Case</SelectItem>
+                    <SelectItem value="appeal_of" className="text-xs font-sans">Appeal Of</SelectItem>
+                    <SelectItem value="consolidated_with" className="text-xs font-sans">Consolidated With</SelectItem>
+                    <SelectItem value="cross_suit" className="text-xs font-sans">Cross-Suit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Search Cases</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input value={linkSearch} onChange={e => setLinkSearch(e.target.value)} placeholder="Title, ID, client..." className="pl-9 h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="max-h-[280px] overflow-y-auto space-y-1.5 border border-border/40 rounded-md p-2">
+                {cases.filter(c =>
+                  c.id !== selectedCase.id &&
+                  !selectedCase.linkedCases.includes(c.id) &&
+                  (linkSearch === '' ||
+                    c.title.toLowerCase().includes(linkSearch.toLowerCase()) ||
+                    c.id.toLowerCase().includes(linkSearch.toLowerCase()) ||
+                    c.client.toLowerCase().includes(linkSearch.toLowerCase()))
+                ).map(c => (
+                  <button key={c.id} onClick={() => handleLinkCase(c.id)} className="w-full text-left p-2 rounded hover:bg-primary/5 border border-transparent hover:border-primary/20 transition-all">
+                    <p className="text-xs font-medium font-sans text-foreground">{c.title}</p>
+                    <p className="text-[10px] text-muted-foreground font-sans">{c.id} · {c.client} · {c.court}</p>
+                  </button>
+                ))}
+                {cases.filter(c => c.id !== selectedCase.id && !selectedCase.linkedCases.includes(c.id)).length === 0 && (
+                  <p className="text-[11px] text-muted-foreground font-sans text-center py-4">No more cases to link</p>
+                )}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => setShowLinkCase(false)}>Cancel</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Schedule Hearing Dialog */}
+        <Dialog open={showScheduleHearing} onOpenChange={setShowScheduleHearing}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Schedule Next Hearing</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                POST /api/hearings — updates case.next_hearing_date automatically
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Date *</Label>
+                  <Input type="date" value={hearingForm.date} onChange={e => setHearingForm(f => ({ ...f, date: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-sans">Time</Label>
+                  <Input type="time" value={hearingForm.time} onChange={e => setHearingForm(f => ({ ...f, time: e.target.value }))} className="h-9 text-sm font-sans" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-sans">Purpose</Label>
+                <Input value={hearingForm.purpose} onChange={e => setHearingForm(f => ({ ...f, purpose: e.target.value }))} placeholder="e.g. Final arguments, Evidence" className="h-9 text-sm font-sans" />
+              </div>
+              <p className="text-[10px] text-muted-foreground font-sans bg-secondary/40 p-2 rounded">
+                Court: <span className="font-medium text-foreground">{selectedCase.court}</span> · Judge: <span className="font-medium text-foreground">{selectedCase.judge}</span>
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => setShowScheduleHearing(false)}>Cancel</Button>
+              <Button size="sm" className="bg-gradient-primary font-sans text-xs gap-1.5" disabled={!hearingForm.date} onClick={handleScheduleHearing}>
+                <Calendar className="h-3.5 w-3.5" /> Schedule
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Confirm Status Change Dialog */}
+        <Dialog open={!!pendingStatus} onOpenChange={(o) => { if (!o) { setPendingStatus(null); setStatusChangeReason(''); } }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-sans">Change Case Status?</DialogTitle>
+              <DialogDescription className="text-xs font-sans text-muted-foreground">
+                Move from <Badge variant="outline" className="text-[10px] mx-1">{selectedCase.status}</Badge>
+                → <Badge variant="outline" className="text-[10px] mx-1 bg-primary/10 text-primary border-primary/20">{pendingStatus}</Badge>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 py-2">
+              <Label className="text-xs font-sans">Reason / Note (optional)</Label>
+              <Textarea value={statusChangeReason} onChange={e => setStatusChangeReason(e.target.value)} placeholder="e.g. Arguments completed, judgment reserved" className="text-sm font-sans min-h-[70px] resize-none" />
+              <p className="text-[10px] text-muted-foreground font-sans">A timeline event will be auto-created.</p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="font-sans text-xs" onClick={() => { setPendingStatus(null); setStatusChangeReason(''); }}>Cancel</Button>
+              <Button size="sm" className="bg-gradient-primary font-sans text-xs gap-1.5" onClick={confirmStatusChange}>
+                <CheckCircle2 className="h-3.5 w-3.5" /> Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </motion.div>
     );
   }
+
 
   // ─── Case List View ────────────────────────────────────────────
   return (
