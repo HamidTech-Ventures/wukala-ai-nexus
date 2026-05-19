@@ -346,6 +346,18 @@ const courtTypes = ['All Courts', 'Lahore High Court', 'Sessions Court', 'Civil 
 const caseTypes = ['All Types', 'Tax', 'Criminal', 'Civil', 'Property', 'Banking', 'Labour', 'Corporate'];
 
 // ─── Component ──────────────────────────────────────────────────────
+// ─── Status Transition Rules (enforced server-side too) ────────────
+const allowedTransitions: Record<CaseStatus, CaseStatus[]> = {
+  Filed:       ['Active', 'Decided'],
+  Active:      ['Heard', 'Reserved', 'Decided', 'Negotiation', 'Discovery'],
+  Discovery:   ['Active', 'Negotiation', 'Decided'],
+  Negotiation: ['Active', 'Decided'],
+  Heard:       ['Reserved', 'Decided', 'Active'],
+  Reserved:    ['Decided'],
+  Decided:     ['Appeal'],
+  Appeal:      ['Decided'],
+};
+
 export default function CaseManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
@@ -357,6 +369,28 @@ export default function CaseManagement() {
   const [filterCourt, setFilterCourt] = useState('All Courts');
   const [filterType, setFilterType] = useState('All Types');
   const [newNote, setNewNote] = useState('');
+
+  // Add Event dialog
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [eventForm, setEventForm] = useState({
+    type: 'note' as TimelineEvent['type'],
+    date: new Date().toISOString().slice(0, 10),
+    title: '',
+    description: '',
+  });
+
+  // Link Case dialog
+  const [showLinkCase, setShowLinkCase] = useState(false);
+  const [linkSearch, setLinkSearch] = useState('');
+  const [linkRelationship, setLinkRelationship] = useState('related');
+
+  // Schedule Hearing dialog
+  const [showScheduleHearing, setShowScheduleHearing] = useState(false);
+  const [hearingForm, setHearingForm] = useState({ date: '', time: '10:00', purpose: '' });
+
+  // Status change confirmation
+  const [pendingStatus, setPendingStatus] = useState<CaseStatus | null>(null);
+  const [statusChangeReason, setStatusChangeReason] = useState('');
 
   // Edit form state
   const [editForm, setEditForm] = useState({
