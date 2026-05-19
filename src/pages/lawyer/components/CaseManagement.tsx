@@ -442,6 +442,114 @@ export default function CaseManagement() {
     toast.success('Case updated successfully', { description: 'Changes saved. In production this calls PATCH /api/cases/:id' });
   };
 
+  // ─── Add Timeline Event ──────────────────────────────────────
+  const handleAddEvent = () => {
+    if (!selectedCase || !eventForm.title.trim()) return;
+    const newEvent: TimelineEvent = {
+      id: Date.now(),
+      date: eventForm.date,
+      title: eventForm.title.trim(),
+      description: eventForm.description.trim(),
+      type: eventForm.type,
+    };
+    const updated = { ...selectedCase, timeline: [newEvent, ...selectedCase.timeline] };
+    setSelectedCase(updated);
+    setShowAddEvent(false);
+    setEventForm({ type: 'note', date: new Date().toISOString().slice(0, 10), title: '', description: '' });
+    toast.success('Timeline event added', {
+      description: 'POST /api/cases/' + selectedCase.id + '/timeline',
+    });
+  };
+
+  // ─── Link Case ──────────────────────────────────────────────
+  const handleLinkCase = (linkedId: string) => {
+    if (!selectedCase) return;
+    if (selectedCase.linkedCases.includes(linkedId)) {
+      toast.error('Case already linked');
+      return;
+    }
+    const linked = cases.find(c => c.id === linkedId);
+    const updated = {
+      ...selectedCase,
+      linkedCases: [...selectedCase.linkedCases, linkedId],
+      timeline: [
+        { id: Date.now(), date: new Date().toISOString().slice(0, 10),
+          title: `Linked to ${linked?.id} (${linkRelationship})`,
+          description: linked?.title || '', type: 'note' as const },
+        ...selectedCase.timeline,
+      ],
+    };
+    setSelectedCase(updated);
+    setShowLinkCase(false);
+    setLinkSearch('');
+    toast.success('Case linked', { description: 'POST /api/cases/' + selectedCase.id + '/links' });
+  };
+
+  const handleUnlinkCase = (linkedId: string) => {
+    if (!selectedCase) return;
+    setSelectedCase({ ...selectedCase, linkedCases: selectedCase.linkedCases.filter(id => id !== linkedId) });
+    toast.success('Case unlinked', { description: 'DELETE /api/cases/' + selectedCase.id + '/links/' + linkedId });
+  };
+
+  // ─── Schedule Hearing (writes back to cases.next_hearing) ───
+  const handleScheduleHearing = () => {
+    if (!selectedCase || !hearingForm.date) return;
+    const scheduledAt = `${hearingForm.date}T${hearingForm.time}`;
+    const updated = {
+      ...selectedCase,
+      nextHearing: hearingForm.date,
+      timeline: [
+        { id: Date.now(), date: hearingForm.date,
+          title: `Hearing scheduled — ${hearingForm.purpose || 'Court appearance'}`,
+          description: `Scheduled for ${hearingForm.date} at ${hearingForm.time}. Auto-updates case.next_hearing_date.`,
+          type: 'hearing' as const },
+        ...selectedCase.timeline,
+      ],
+    };
+    setSelectedCase(updated);
+    setShowScheduleHearing(false);
+    setHearingForm({ date: '', time: '10:00', purpose: '' });
+    toast.success('Hearing scheduled', {
+      description: 'POST /api/hearings — case.next_hearing_date auto-updated via trigger',
+    });
+  };
+
+  // ─── Pipeline stage change with validation ──────────────────
+  const handleStageClick = (newStatus: CaseStatus) => {
+    if (!selectedCase || newStatus === selectedCase.status) return;
+    const allowed = allowedTransitions[selectedCase.status] || [];
+    if (!allowed.includes(newStatus)) {
+      toast.error('Invalid transition', {
+        description: `Cannot move from ${selectedCase.status} → ${newStatus}. Allowed: ${allowed.join(', ') || 'none'}`,
+      });
+      return;
+    }
+    setPendingStatus(newStatus);
+  };
+
+  const confirmStatusChange = () => {
+    if (!selectedCase || !pendingStatus) return;
+    const oldStatus = selectedCase.status;
+    const updated = {
+      ...selectedCase,
+      status: pendingStatus,
+      timeline: [
+        { id: Date.now(), date: new Date().toISOString().slice(0, 10),
+          title: `Status changed: ${oldStatus} → ${pendingStatus}`,
+          description: statusChangeReason || 'Manual stage update from pipeline',
+          type: 'order' as const },
+        ...selectedCase.timeline,
+      ],
+    };
+    setSelectedCase(updated);
+    toast.success(`Moved to ${pendingStatus}`, {
+      description: 'PATCH /api/cases/' + selectedCase.id + '/status',
+    });
+    setPendingStatus(null);
+    setStatusChangeReason('');
+  };
+
+
   const handleExportCase = () => {
     if (!selectedCase) return;
     // Generate a text-based case summary and download as file
