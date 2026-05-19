@@ -669,34 +669,38 @@ export default function CaseManagement() {
           </div>
         </div>
 
-        {/* Status Pipeline */}
+        {/* Status Pipeline — clickable to change status */}
         <Card className="border-border/50 shadow-sm">
           <CardContent className="p-4">
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 font-sans">Case Pipeline</p>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider font-sans">Case Pipeline</p>
+              <p className="text-[10px] text-muted-foreground font-sans">Click a stage to advance</p>
+            </div>
             <div className="flex items-center gap-1 overflow-x-auto pb-1">
               {pipelineStages.map((stage, i) => {
                 const isActive = i === currentStageIndex;
                 const isPast = i < currentStageIndex;
+                const allowed = allowedTransitions[selectedCase.status]?.includes(stage.status);
+                const clickable = !isActive && (isPast || allowed);
                 return (
                   <div key={stage.label} className="flex items-center shrink-0">
-                    <div
+                    <button
+                      onClick={() => handleStageClick(stage.status)}
+                      disabled={isActive}
+                      title={!clickable && !isActive ? `Cannot transition from ${selectedCase.status} → ${stage.status}` : ''}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-sans font-medium transition-all ${
                         isActive
-                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          ? 'bg-primary text-primary-foreground shadow-sm cursor-default'
                           : isPast
-                            ? 'bg-success/10 text-success'
-                            : 'bg-secondary text-muted-foreground'
+                            ? 'bg-success/10 text-success hover:bg-success/20 cursor-pointer'
+                            : clickable
+                              ? 'bg-secondary text-muted-foreground hover:bg-primary/10 hover:text-primary cursor-pointer'
+                              : 'bg-secondary/50 text-muted-foreground/40 cursor-not-allowed'
                       }`}
                     >
-                      {isPast ? (
-                        <CheckCircle2 className="h-3 w-3" />
-                      ) : isActive ? (
-                        <CircleDot className="h-3 w-3" />
-                      ) : (
-                        <Circle className="h-3 w-3" />
-                      )}
+                      {isPast ? <CheckCircle2 className="h-3 w-3" /> : isActive ? <CircleDot className="h-3 w-3" /> : <Circle className="h-3 w-3" />}
                       {stage.label}
-                    </div>
+                    </button>
                     {i < pipelineStages.length - 1 && (
                       <ChevronRight className={`h-3.5 w-3.5 mx-0.5 shrink-0 ${isPast ? 'text-success/50' : 'text-border'}`} />
                     )}
@@ -710,16 +714,26 @@ export default function CaseManagement() {
         {/* Case Info Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { label: 'Judge', value: selectedCase.judge, icon: Gavel },
-            { label: 'Opposing Counsel', value: selectedCase.opposingCounsel, icon: User },
-            { label: 'Next Hearing', value: selectedCase.nextHearing, icon: Calendar },
-            { label: 'Filed Date', value: selectedCase.filedDate, icon: Clock },
+            { label: 'Judge', value: selectedCase.judge, icon: Gavel, action: null },
+            { label: 'Opposing Counsel', value: selectedCase.opposingCounsel, icon: User, action: null },
+            { label: 'Next Hearing', value: selectedCase.nextHearing, icon: Calendar, action: 'hearing' as const },
+            { label: 'Filed Date', value: selectedCase.filedDate, icon: Clock, action: null },
           ].map(item => (
             <Card key={item.label} className="border-border/50 shadow-sm">
               <CardContent className="p-3">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <item.icon className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-wider">{item.label}</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <item.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground font-sans uppercase tracking-wider">{item.label}</span>
+                  </div>
+                  {item.action === 'hearing' && (
+                    <button
+                      onClick={() => setShowScheduleHearing(true)}
+                      className="text-[9px] text-primary hover:underline font-sans font-medium"
+                    >
+                      Schedule
+                    </button>
+                  )}
                 </div>
                 <p className="text-xs font-medium font-sans text-foreground leading-snug">{item.value}</p>
               </CardContent>
@@ -735,35 +749,44 @@ export default function CaseManagement() {
           </CardContent>
         </Card>
 
-        {/* Linked Cases */}
-        {selectedCase.linkedCases.length > 0 && (
-          <Card className="border-border/50 shadow-sm">
-            <CardContent className="p-4">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 font-sans flex items-center gap-1.5">
-                <Link2 className="h-3.5 w-3.5" /> Linked Cases
+        {/* Linked Cases — always visible with Link button */}
+        <Card className="border-border/50 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider font-sans flex items-center gap-1.5">
+                <Link2 className="h-3.5 w-3.5" /> Linked Cases ({selectedCase.linkedCases.length})
               </p>
+              <Button variant="outline" size="sm" className="h-7 text-[10px] font-sans gap-1" onClick={() => setShowLinkCase(true)}>
+                <Plus className="h-3 w-3" /> Link Case
+              </Button>
+            </div>
+            {selectedCase.linkedCases.length === 0 ? (
+              <p className="text-[11px] text-muted-foreground font-sans italic">No linked cases. Link related, parent, appeal or cross-suit cases.</p>
+            ) : (
               <div className="flex flex-wrap gap-2">
                 {selectedCase.linkedCases.map(linkedId => {
                   const linked = cases.find(c => c.id === linkedId);
                   if (!linked) return null;
                   return (
-                    <button
-                      key={linkedId}
-                      onClick={() => { setSelectedCase(linked); setDetailTab('timeline'); }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all text-left"
-                    >
-                      <GitBranch className="h-3.5 w-3.5 text-primary" />
-                      <div>
-                        <p className="text-xs font-medium font-sans text-foreground">{linked.title}</p>
-                        <p className="text-[10px] text-muted-foreground font-sans">{linked.id} · {linked.court}</p>
-                      </div>
-                    </button>
+                    <div key={linkedId} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all">
+                      <button onClick={() => { setSelectedCase(linked); setDetailTab('timeline'); }} className="flex items-center gap-2 text-left">
+                        <GitBranch className="h-3.5 w-3.5 text-primary" />
+                        <div>
+                          <p className="text-xs font-medium font-sans text-foreground">{linked.title}</p>
+                          <p className="text-[10px] text-muted-foreground font-sans">{linked.id} · {linked.court}</p>
+                        </div>
+                      </button>
+                      <button onClick={() => handleUnlinkCase(linkedId)} className="ml-2 text-muted-foreground hover:text-destructive">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
                   );
                 })}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
+
 
         {/* Detail Tabs */}
         <Tabs value={detailTab} onValueChange={setDetailTab}>
