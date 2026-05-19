@@ -814,29 +814,37 @@ export default function CaseManagement() {
           >
             {/* Timeline */}
             {detailTab === 'timeline' && (
-              <div className="relative">
-                <div className="absolute left-[19px] top-2 bottom-2 w-px bg-border" />
-                <div className="space-y-0">
-                  {selectedCase.timeline.map((event, i) => {
-                    const Icon = timelineIcon[event.type] || Clock;
-                    return (
-                      <div key={event.id} className="relative flex gap-4 pb-5">
-                        <div className={`relative z-10 h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${timelineColor[event.type]}`}>
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="pt-1 min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="text-sm font-medium font-sans text-foreground">{event.title}</p>
-                            <span className="text-[10px] text-muted-foreground font-sans whitespace-nowrap">{event.date}</span>
+              <div className="space-y-3">
+                <div className="flex justify-end">
+                  <Button size="sm" className="bg-gradient-primary text-xs font-sans gap-1.5 h-8" onClick={() => setShowAddEvent(true)}>
+                    <Plus className="h-3.5 w-3.5" /> Add Event
+                  </Button>
+                </div>
+                <div className="relative">
+                  <div className="absolute left-[19px] top-2 bottom-2 w-px bg-border" />
+                  <div className="space-y-0">
+                    {selectedCase.timeline.map((event) => {
+                      const Icon = timelineIcon[event.type] || Clock;
+                      return (
+                        <div key={event.id} className="relative flex gap-4 pb-5">
+                          <div className={`relative z-10 h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${timelineColor[event.type]}`}>
+                            <Icon className="h-4 w-4" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground font-sans mt-0.5 leading-relaxed">{event.description}</p>
+                          <div className="pt-1 min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="text-sm font-medium font-sans text-foreground">{event.title}</p>
+                              <span className="text-[10px] text-muted-foreground font-sans whitespace-nowrap">{event.date}</span>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground font-sans mt-0.5 leading-relaxed">{event.description}</p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}
+
 
             {/* Documents */}
             {detailTab === 'documents' && (
